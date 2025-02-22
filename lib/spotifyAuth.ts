@@ -13,14 +13,14 @@ export async function redirectToAuthCodeFlow(clientId: string) {
   params.append("redirect_uri", "http://localhost:3000");
   params.append(
     "scope",
-    "user-read-private user-read-email streaming user-library-read user-library-modify user-read-playback-state user-modify-playback-state"
+    "user-read-private user-read-email streaming user-library-read user-read-playback-state user-modify-playback-state user-top-read user-read-currently-playing user-read-recently-played user-follow-read"
   );
   params.append("code_challenge_method", "S256");
   params.append("code_challenge", challenge);
 
   document.location = `https://accounts.spotify.com/authorize?${params.toString()}`;
 }
-function generateCodeVerifier(length: number) {
+export function generateCodeVerifier(length: number) {
   let text = "";
   let possible =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -31,7 +31,7 @@ function generateCodeVerifier(length: number) {
   return text;
 }
 
-async function generateCodeChallenge(codeVerifier: string) {
+export async function generateCodeChallenge(codeVerifier: string) {
   const data = new TextEncoder().encode(codeVerifier);
   const digest = await window.crypto.subtle.digest("SHA-256", data);
   return btoa(String.fromCharCode.apply(null, [...new Uint8Array(digest)]))
@@ -43,7 +43,6 @@ async function generateCodeChallenge(codeVerifier: string) {
 export async function getAccessToken(clientId: string, code: string) {
   // TODO: Get access token for code
   const verifier = localStorage.getItem("verifier");
-
   const params = new URLSearchParams();
   params.append("client_id", clientId);
   params.append("grant_type", "authorization_code");
@@ -61,6 +60,7 @@ export async function getAccessToken(clientId: string, code: string) {
 
   const { access_token } = await result.json();
   console.log("returning access token");
+
   return access_token;
 }
 
@@ -68,6 +68,18 @@ export async function fetchProfile(token: string): Promise<any> {
   // TODO: Call Web API
   console.log("fetching profile");
   const result = await fetch("https://api.spotify.com/v1/me", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  return await JSON.parse(JSON.stringify(result));
+}
+
+export async function fetchTracks(token: string): Promise<any> {
+  // TODO: Call Web API
+
+  console.log("fetching tracks", token);
+  const result = await fetch("https://api.spotify.com/v1/me/player", {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
