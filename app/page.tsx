@@ -33,13 +33,9 @@ export default function Home() {
         direction="horizontal"
         className="flex gap-3 flex-grow overflow-hidden py-4"
       >
-        <Panel id="sidebar" minSize={10} maxSize={25} order={1}>
-          <Sidebar />
-        </Panel>
+        <Sidebar />
         <PanelResizeHandle />
-        <Panel id="main" minSize={60} order={2}>
-          <Main />
-        </Panel>
+        <Main />
         <PanelResizeHandle />
       </PanelGroup>
 

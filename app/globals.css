@@ -67,7 +67,3 @@ input[type="range"]::-ms-track {
 .sidebarSearch {
   transition: width 300ms;
 }
-
-.resizableX {
-  resize: both;
-}
