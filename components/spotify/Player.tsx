@@ -23,7 +23,7 @@ const Player = () => {
   const spotifyApi = useSpotify();
   const { currentTrackId, setCurrentTrackId, setIsPlaying, isPlaying } =
     useSpotifyContext();
-  const [volume, setVolume] = useState(50);
+  const [volume, setVolume] = useState(20);
   const [seek, setSeek] = useState(0);
   const [loading, setLoading] = useState(true);
   const fetchCurrentTrack = () => {
@@ -114,13 +114,15 @@ const Player = () => {
 
   useEffect(() => {
     if (spotifyApi.getAccessToken() && !currentTrackId) {
-      fetchCurrentTrack(); // when a song plays this will run on client refresh
-      setVolume(50);
+      // on render, check for current track
+      fetchCurrentTrack();
+      // setVolume(50);
       setLoading(false);
     }
   }, [currentTrackId, spotifyApi, session]);
+
   useEffect(() => {
-    if (volume > 0 && volume < 100) {
+    if (volume >= 0 && volume < 100) {
       debounceAdjustVolume(volume);
     }
   }, [volume]);
@@ -142,7 +144,7 @@ const Player = () => {
   );
 
   useEffect(() => {
-    if (seek > 0 && seek < songInfo.duration_ms / 1000) {
+    if (seek > 0 && seek < songInfo?.duration_ms / 1000) {
       debounceSeek(seek);
     }
   }, [seek]);
@@ -210,24 +212,33 @@ const Player = () => {
           />
         </div>
         <div className="text-[0.875rem] flex place-items-center gap-2">
-          <span>{millisecondsToMinutesSeconds(seek * 1000)}</span>
+          {songInfo && <span>{millisecondsToMinutesSeconds(seek * 1000)}</span>}
           <input
             type="range"
             min={0}
             max={(songInfo?.duration_ms / 1000).toString()}
-            value={seek}
+            value={songInfo ? seek : 0}
             step={0.01}
             onChange={(e) => setSeek(Number(e.target.value))}
-            className="w-80"
+            className="w-80 disabled:"
+            disabled={!songInfo}
           />
-          <span>{millisecondsToMinutesSeconds(songInfo?.duration_ms)}</span>
+          {songInfo && (
+            <span>{millisecondsToMinutesSeconds(songInfo?.duration_ms)}</span>
+          )}
         </div>
       </div>
       <div className="flex-1 flex gap-2 justify-center shrink-0">
         {volume > 0 ? (
-          <SpeakerWaveIcon className=" size-7 text-neutral-400" />
+          <SpeakerWaveIcon
+            className=" size-7 text-neutral-400"
+            onClick={() => setVolume(0)}
+          />
         ) : (
-          <SpeakerXMarkIcon className=" size-7 text-neutral-400" />
+          <SpeakerXMarkIcon
+            className=" size-7 text-neutral-400"
+            onClick={() => setVolume(50)}
+          />
         )}
         <div>
           <input

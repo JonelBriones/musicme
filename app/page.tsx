@@ -9,6 +9,7 @@ import Player from "@/components/spotify/Player";
 import useSpotify from "@/components/hooks/useSpotify";
 import { useEffect } from "react";
 import { redirect } from "next/navigation";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -27,10 +28,21 @@ export default function Home() {
   return (
     <div className="flex flex-col text-[1rem] h-screen p-4">
       <TopBar />
-      <div className="flex gap-3 flex-grow overflow-hidden py-4">
-        <Sidebar />
-        <Main />
-      </div>
+      <PanelGroup
+        autoSaveId="example"
+        direction="horizontal"
+        className="flex gap-3 flex-grow overflow-hidden py-4"
+      >
+        <Panel id="sidebar" minSize={10} maxSize={25} order={1}>
+          <Sidebar />
+        </Panel>
+        <PanelResizeHandle />
+        <Panel id="main" minSize={60} order={2}>
+          <Main />
+        </Panel>
+        <PanelResizeHandle />
+      </PanelGroup>
+
       <Player />
     </div>
   );
