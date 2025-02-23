@@ -4,8 +4,9 @@ import useSpotify from "../hooks/useSpotify";
 import { useSpotifyContext } from "../SpotifyContext";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { MusicalNoteIcon, PauseIcon } from "@heroicons/react/24/solid";
-import { PlayIcon } from "@heroicons/react/24/solid";
+import { MusicalNoteIcon } from "@heroicons/react/24/solid";
+import { PlayCircleIcon } from "@heroicons/react/24/solid";
+import { PauseCircleIcon } from "@heroicons/react/24/solid";
 import { ForwardIcon } from "@heroicons/react/24/solid";
 import { BackwardIcon } from "@heroicons/react/24/solid";
 import { SpeakerWaveIcon } from "@heroicons/react/24/solid";
@@ -13,6 +14,7 @@ import { SpeakerXMarkIcon } from "@heroicons/react/24/solid";
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import { QueueListIcon } from "@heroicons/react/24/solid";
 import { PlusCircleIcon } from "@heroicons/react/24/solid";
+import { ArrowsRightLeftIcon } from "@heroicons/react/24/solid";
 
 const Player = () => {
   const { data: session } = useSession();
@@ -22,27 +24,22 @@ const Player = () => {
   const { currentTrackId, setCurrentTrackId, setIsPlaying, isPlaying } =
     useSpotifyContext();
   const [volume, setVolume] = useState(50);
+  const [seek, setSeek] = useState(0);
   const [loading, setLoading] = useState(true);
   const fetchCurrentTrack = () => {
-    // check if a song is currently playing,
-    // if song is currently playing, set new
-    console.log("running fetch current track");
     if (!songInfo) {
       spotifyApi.getMyCurrentPlayingTrack().then((data) => {
         console.log("current track", data);
         setCurrentTrackId(data.body?.item?.id);
         console.log();
         spotifyApi.getMyCurrentPlaybackState().then((data) => {
-          console.log("current playback state", data);
+          console.log("current playback state", data.body);
           setIsPlaying(data.body?.is_playing);
+          setSeek(data.body?.progress_ms / 1000);
         });
       });
     }
   };
-  useEffect(() => {
-    console.log("song info updated", songInfo);
-  }, [songInfo, spotifyApi]);
-
   const handlePlayPause = () => {
     // check if a song is currently playing,
     // if song is currently playing, set new
@@ -50,7 +47,6 @@ const Player = () => {
     if (songInfo) {
       spotifyApi.getMyCurrentPlaybackState().then((data) => {
         console.log("current playback state", data);
-        console.log(data);
         if (data.body?.is_playing) {
           spotifyApi.pause();
           setIsPlaying(false);
@@ -90,7 +86,6 @@ const Player = () => {
   const handleShuffle = () => {
     if (songInfo) {
       spotifyApi.getMyCurrentPlaybackState().then((data) => {
-        console.log("current playback state", data);
         if (data.body?.is_playing) {
           // spotifyApi.setShuffle();
         }
@@ -99,10 +94,8 @@ const Player = () => {
   };
 
   const handleRepeat = () => {
-    console.log("go to next song");
     if (songInfo) {
       spotifyApi.getMyCurrentPlaybackState().then((data) => {
-        console.log("current playback state", data);
         console.log(data);
         if (data.body?.is_playing) {
           spotifyApi.setRepeat(songInfo);
@@ -111,6 +104,14 @@ const Player = () => {
     }
   };
 
+  function millisecondsToMinutesSeconds(milliseconds: number) {
+    const minutes = Math.floor(milliseconds / (60 * 1000));
+    const remainingMilliseconds = milliseconds % (60 * 1000);
+    const seconds = Math.floor(remainingMilliseconds / 1000);
+
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  }
+
   useEffect(() => {
     if (spotifyApi.getAccessToken() && !currentTrackId) {
       fetchCurrentTrack(); // when a song plays this will run on client refresh
@@ -118,7 +119,6 @@ const Player = () => {
       setLoading(false);
     }
   }, [currentTrackId, spotifyApi, session]);
-
   useEffect(() => {
     if (volume > 0 && volume < 100) {
       debounceAdjustVolume(volume);
@@ -138,6 +138,19 @@ const Player = () => {
     debounce((volume) => {
       spotifyApi.setVolume(volume).catch((error) => {});
     }, 500),
+    []
+  );
+
+  useEffect(() => {
+    if (seek > 0 && seek < songInfo.duration_ms / 1000) {
+      debounceSeek(seek);
+    }
+  }, [seek]);
+
+  const debounceSeek = useCallback(
+    debounce((seek) => {
+      spotifyApi.seek(seek * 1000).catch((error) => {});
+    }, 1000),
     []
   );
   return (
@@ -166,30 +179,49 @@ const Player = () => {
           </span>
         </div>
       </div>
-      <div className="flex justify-center shrink-0 gap-4 w-60">
-        <BackwardIcon
-          className=" size-7 text-neutral-400"
-          onClick={handleSkipPrevious}
-        />
-        {isPlaying ? (
-          <PauseIcon
-            className=" size-7 text-neutral-400"
-            onClick={handlePlayPause}
+      <div className="flex flex-col justify-center gap-3">
+        <div className="flex justify-center place-items-center shrink-0 gap-4">
+          <ArrowsRightLeftIcon
+            className=" size-6 text-neutral-400"
+            onClick={handleShuffle}
           />
-        ) : (
-          <PlayIcon
-            className=" size-7 text-neutral-400"
-            onClick={handlePlayPause}
+          <BackwardIcon
+            className=" size-6 text-neutral-400"
+            onClick={handleSkipPrevious}
           />
-        )}
-        <ForwardIcon
-          className=" size-7 text-neutral-400"
-          onClick={handleSkipNext}
-        />
-        <ArrowPathIcon
-          className=" size-7 text-neutral-400"
-          onClick={handleRepeat}
-        />
+          {isPlaying ? (
+            <PauseCircleIcon
+              className=" size-10 text-neutral-400"
+              onClick={handlePlayPause}
+            />
+          ) : (
+            <PlayCircleIcon
+              className=" size-10 text-neutral-400"
+              onClick={handlePlayPause}
+            />
+          )}
+          <ForwardIcon
+            className=" size-6 text-neutral-400"
+            onClick={handleSkipNext}
+          />
+          <ArrowPathIcon
+            className=" size-6 text-neutral-400"
+            onClick={handleRepeat}
+          />
+        </div>
+        <div className="text-[0.875rem] flex place-items-center gap-2">
+          <span>{millisecondsToMinutesSeconds(seek * 1000)}</span>
+          <input
+            type="range"
+            min={0}
+            max={(songInfo?.duration_ms / 1000).toString()}
+            value={seek}
+            step={0.01}
+            onChange={(e) => setSeek(Number(e.target.value))}
+            className="w-80"
+          />
+          <span>{millisecondsToMinutesSeconds(songInfo?.duration_ms)}</span>
+        </div>
       </div>
       <div className="flex-1 flex gap-2 justify-center shrink-0">
         {volume > 0 ? (

@@ -68,30 +68,29 @@ const Sidebar = () => {
           {playLists.map((playList, idx) => {
             const { images, id, name } = playList;
             return (
-              <Fragment key={id}>
-                <div
-                  className="flex gap-3 place-items-center cursor-pointer"
-                  onClick={() => getPlayListFromId(id)}
-                >
-                  {viewAs !== "compact" &&
-                    (images !== null ? (
-                      <Image
-                        height={viewAs == "list" ? 60 : gridSize}
-                        width={viewAs == "list" ? 60 : gridSize}
-                        alt={name + "_img"}
-                        src={images?.[0]?.url}
-                        className="rounded-md"
-                      />
-                    ) : (
-                      <div className="flex place-items-center justify-center bg-neutral-800 rounded-md h-[60px] w-[60px]">
-                        <MusicalNoteIcon className=" size-7 text-neutral-400" />
-                      </div>
-                    ))}
-                  {viewAs !== "grid" && (
-                    <p className="text-white text-[1rem]">{name}</p>
-                  )}
-                </div>
-              </Fragment>
+              <div
+                key={playList.id}
+                className="flex gap-3 place-items-center cursor-pointer"
+                onClick={() => getPlayListFromId(id)}
+              >
+                {viewAs !== "compact" &&
+                  (images !== null ? (
+                    <Image
+                      height={viewAs == "list" ? 60 : gridSize}
+                      width={viewAs == "list" ? 60 : gridSize}
+                      alt={name + "_img"}
+                      src={images?.[0]?.url}
+                      className="rounded-md"
+                    />
+                  ) : (
+                    <div className="flex place-items-center justify-center bg-neutral-800 rounded-md h-[60px] w-[60px]">
+                      <MusicalNoteIcon className=" size-7 text-neutral-400" />
+                    </div>
+                  ))}
+                {viewAs !== "grid" && (
+                  <p className="text-white text-[1rem]">{name}</p>
+                )}
+              </div>
             );
           })}
         </div>

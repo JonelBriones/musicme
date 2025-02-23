@@ -9,13 +9,12 @@ import Playlist from "./Playlist";
 const Main = () => {
   const { data: session } = useSession();
 
-  const { selectedPlaylist } = useSpotifyContext;
+  const { selectedPlaylist } = useSpotifyContext();
 
-  console.log("main", selectedPlaylist);
+  console.log("main", typeof selectedPlaylist, selectedPlaylist);
   return (
     <div className="w-full h-full inline-flex text-white backgroundContainer">
-      {selectedPlaylist !== null ||
-        (selectedPlaylist !== undefined && <Playlist />)}
+      {selectedPlaylist !== null && <Playlist />}
     </div>
   );
 };
