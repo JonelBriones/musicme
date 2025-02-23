@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "cookies-next": "^5.1.0",
     "mongoose": "^8.10.1",
     "next": "15.1.7",
@@ -16,7 +17,8 @@
     "openai": "^4.85.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "spotify-web-api-node": "^5.0.2"
+    "spotify-web-api-node": "^5.0.2",
+    "tailwind-merge": "^3.0.2"
   },
   "devDependencies": {
     "@types/node": "^20",

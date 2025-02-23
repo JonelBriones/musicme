@@ -14,13 +14,11 @@ export default function Home() {
   return (
     <div className="flex flex-col h-screen">
       <TopBar />
-      <div className="h-screen flex gap-3">
+      <div className="flex gap-3 overflow-hidden">
         <Sidebar />
         <Main />
       </div>
-
       <Player />
-      {/* <SpotifyPlayer /> */}
     </div>
   );
 }

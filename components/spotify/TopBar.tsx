@@ -1,11 +1,11 @@
 import { signOut, useSession } from "next-auth/react";
-import React from "react";
+import React, { useEffect } from "react";
 
 const TopBar = () => {
   const { data: session } = useSession();
 
   return (
-    <div>
+    <div className="text-white">
       <h1>
         Welcome {session?.user?.name ? session.user.name : "not logged in"}{" "}
         <button onClick={() => signOut()}>Log out</button>
