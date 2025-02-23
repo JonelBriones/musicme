@@ -20,13 +20,17 @@ const Sidebar = () => {
   useEffect(() => {
     if (spotifyApi.getAccessToken()) {
       console.log("access token", spotifyApi._credentials);
-      if (spotifyApi._credentials == null) {
-        redirect("/login");
-      }
-      spotifyApi.getUserPlaylists().then((data) => {
-        setPlaylists(data.body.items);
-        setLoading(false);
-      });
+
+      spotifyApi
+        .getUserPlaylists()
+        .then((data) => {
+          setPlaylists(data.body.items);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          redirect("/login");
+        });
     }
   }, [session, spotifyApi]);
 
@@ -34,7 +38,7 @@ const Sidebar = () => {
   const [gridSize, setGridSize] = useState(60);
 
   return (
-    <div className="flex flex-col min-w-[120px] w-[400px] backgroundContainer">
+    <div className="flex flex-col min-w-[120px] w-[400px] overflow-auto backgroundContainer">
       <p className="text-white text-4xl">{viewAs}</p>
       <div>
         <button
@@ -66,9 +70,8 @@ const Sidebar = () => {
             return (
               <Fragment key={id}>
                 <div
-                  className={twJoin(
-                    "flex gap-3 place-items-center cursor-pointer"
-                  )}
+                  className="flex gap-3 place-items-center cursor-pointer"
+                  onClick={() => getPlayListFromId(id)}
                 >
                   {viewAs !== "compact" &&
                     (images !== null ? (
@@ -85,12 +88,7 @@ const Sidebar = () => {
                       </div>
                     ))}
                   {viewAs !== "grid" && (
-                    <p
-                      className="text-white text-[1rem]"
-                      onClick={() => getPlayListFromId(id)}
-                    >
-                      {name}
-                    </p>
+                    <p className="text-white text-[1rem]">{name}</p>
                   )}
                 </div>
               </Fragment>

@@ -9,7 +9,15 @@ import Playlist from "./Playlist";
 const Main = () => {
   const { data: session } = useSession();
 
-  return <Playlist />;
+  const { selectedPlaylist } = useSpotifyContext;
+
+  console.log("main", selectedPlaylist);
+  return (
+    <div className="w-full h-full inline-flex text-white backgroundContainer">
+      {selectedPlaylist !== null ||
+        (selectedPlaylist !== undefined && <Playlist />)}
+    </div>
+  );
 };
 
 export default Main;

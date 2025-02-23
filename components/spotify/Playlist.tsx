@@ -6,8 +6,9 @@ import Song from "./Song";
 
 const Playlist = () => {
   const { selectedPlaylist } = useSpotifyContext();
+  console.log(selectedPlaylist);
   return (
-    <div className="flex-1 backgroundContainer text-neutral-300 text-[.75rem] w-full">
+    <div className="w-full text-neutral-300 text-[.75rem]">
       {/* SELECTED PLAYLIST */}
 
       <div className="border-b border-neutral-600 flex justify-between my-1 pb-2">

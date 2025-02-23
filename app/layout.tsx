@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <AuthProvider>
       <html lang="en">
-        <body className="p-2 bg-neutral-900">
+        <body className="bg-neutral-900">
           <SpotifyContext>{children}</SpotifyContext>
         </body>
       </html>
