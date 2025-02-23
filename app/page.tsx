@@ -12,7 +12,7 @@ export default function Home() {
   console.log(session);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen text-[1rem]">
       <TopBar />
       <div className="flex gap-3 overflow-hidden">
         <Sidebar />

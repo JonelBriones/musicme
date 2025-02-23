@@ -51,6 +51,7 @@ export const authOptions = {
 
       //    return previous token if has not expired
       if (Date.now() < token.accessTokenExpires) {
+        console.log("returning prevous token");
         return token;
       }
       console.log("auth Options , callbacks", error);
