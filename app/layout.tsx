@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "../components/AuthProvider";
+import SpotifyContext from "@/components/SpotifyContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,7 +27,9 @@ export default function RootLayout({
   return (
     <AuthProvider>
       <html lang="en">
-        <body>{children}</body>
+        <body className="p-2 bg-neutral-900">
+          <SpotifyContext>{children}</SpotifyContext>
+        </body>
       </html>
     </AuthProvider>
   );

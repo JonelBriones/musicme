@@ -16,7 +16,7 @@ async function refreshAccessToken(token) {
       refreshToken: refreshToken.refresh_token ?? token.refreshToken,
     };
   } catch (error) {
-    console.log(error);
+    console.log("auth Options", error);
     return {
       ...token,
       error: "Refresh access token error",
@@ -53,7 +53,7 @@ export const authOptions = {
       if (Date.now() < token.accessTokenExpires) {
         return token;
       }
-
+      console.log("auth Options , callbacks", error);
       // refresh token once expired
       return await refreshAccessToken(token);
     },

@@ -70,9 +70,11 @@ const SpotifyPlayer = () => {
           <span>ACCESSTOKEN AVAILABLE:{accessToken ? "true" : "false"}</span>
         </div>
       ) : (
-        <button onClick={() => redirectToAuthCodeFlow(client_id)}>
-          Login with spotify
-        </button>
+        <div>
+          <button onClick={() => redirectToAuthCodeFlow(client_id)}>
+            Login with spotify
+          </button>
+        </div>
       )}
     </div>
   );

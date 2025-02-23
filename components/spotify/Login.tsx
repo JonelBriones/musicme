@@ -1,0 +1,49 @@
+"use client";
+import { getProviders, signIn, useSession } from "next-auth/react";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+
+const Login = () => {
+  const [providers, setProviders] = useState(null);
+  const { data: session } = useSession();
+  useEffect(() => {
+    const setAuthProviders = async () => {
+      const res = await getProviders();
+      setProviders(res);
+      console.log(res);
+    };
+    setAuthProviders();
+  }, []);
+  console.log("session", session);
+  console.log("session", providers);
+
+  if (providers == null) return <div>loading...</div>;
+  return (
+    <div className="h-screen w-screen place-items-center flex flex-col justify-center">
+      <div className="bg-neutral-800 h-[620px] w-[500px] flex flex-col">
+        <span className="flex gap-2 place-items-center">
+          <div className="rounded-full size-10 bg-white" />
+          <h1 className="text-white">SPOTIFY</h1>
+        </span>
+        <div>
+          {providers &&
+            Object.values(providers).map((provider) => (
+              <button
+                key={provider.name}
+                onClick={() =>
+                  signIn(provider.id, {
+                    callbackUrl: "/",
+                  })
+                }
+                className="text-white bg-[#1ed966] rounded-full p-4 w-full text-[1.2em]"
+              >
+                LOG IN TO {provider.name.toUpperCase()}
+              </button>
+            ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
