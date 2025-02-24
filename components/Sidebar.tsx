@@ -128,6 +128,9 @@ const Sidebar = () => {
     const observer = new ResizeObserver((entries) => {
       const { width } = entries[0].contentRect;
       setWidth(width);
+      if (width < 270) {
+        setToggleSearch(false);
+      }
     });
 
     observer.observe(panelRef.current);
@@ -138,137 +141,155 @@ const Sidebar = () => {
       }
     };
   }, []);
-  console.log(width);
+
+  const onExpandLibrary = () => {
+    return true;
+  };
+
+  // console.log(width);
   return (
     <Panel
       id="sidebar"
       minSize={mobileSize()}
       order={1}
+      collapsedSize={10}
+      onCollapse={onExpandLibrary}
       className="flex flex-col overflow-auto backgroundContainer relative shrink-0"
     >
       <div
         ref={panelRef}
         className="flex justify-between  text-neutral-400 mx-2 py-2 "
       >
-        <div
-          ref={toggleSearchRef}
-          className="flex place-items-center w-4/5 relative"
-        >
-          <div
-            className={`absolute top-0 left-0 bottom-0 rounded-lg w-0 bg-neutral-600 sidebarSearch ${
-              toggleSearch ? "w-full" : ""
-            }`}
-          />
-          <MagnifyingGlassIcon
-            ref={toggleSearchButtonRef}
-            className={`size-8 text-neutral-400 p-1 bg-transparent pl-2 z-10 rounded-full ${
-              toggleSearch
-                ? "z-1 cursor-text"
-                : "hover:bg-neutral-600 cursor-pointer"
-            }`}
-            onClick={() => {
-              !toggleSearch && setToggleSearch(!toggleSearch);
-            }}
-          />
-          <input
-            type="text"
-            placeholder="Search your library"
-            className={`${
-              toggleSearch
-                ? "absolute top-0 left-7"
-                : "cursor-default opacity-0 w-0"
-            } p-1 rounded-r-lg bg-transparent text-neutral-400 outline-none opacity-100`}
-          />
-        </div>
-        <div className="flex place-items-center relative">
-          <div
-            ref={toggleButtonRef}
-            className="hover:text-neutral-200 hover:text-[1.05rem] flex gap-2 z-10"
-            onClick={() => {
-              setToggleLayout(!toggleLayout);
-            }}
-          >
-            <span className={`font-light ${toggleSearch ? "hidden" : ""}`}>
-              Recents
-            </span>
-            {viewAs == "grid" ? (
-              <Squares2X2Icon className=" size-6" />
-            ) : viewAs == "list" ? (
-              <ListBulletIcon className=" size-6" />
-            ) : (
-              <Bars3Icon className=" size-6" />
-            )}
-          </div>
-          {toggleLayout && (
+        {width > 240 && (
+          <>
             <div
-              ref={toggleLayoutRef}
-              className="absolute -bottom-40 w-44 flex flex-col right-0 bg-[#3d3d3d] p-1 rounded-lg"
+              ref={toggleSearchRef}
+              className="flex place-items-center w-4/5 relative"
             >
-              <span
-                className="flex gap-3 justify-between hover:bg-neutral-600 bg-[#3d3d3d] p-3"
-                onClick={() => setViewAs("compact")}
-              >
-                <div
-                  className={twJoin(
-                    viewAs == "compact" && "text-[#1ed760]",
-                    "flex gap-3"
-                  )}
-                >
-                  <Bars3Icon className=" size-6" />
-                  <span>Compact</span>
-                </div>
-                {viewAs == "compact" && (
-                  <CheckIcon className="size-6 text-[#1ed760]" />
-                )}
-              </span>
-              <span
-                className="flex gap-3 justify-between hover:bg-neutral-600 bg-[#3d3d3d] p-3"
-                onClick={() => setViewAs("list")}
-              >
-                <div
-                  className={twJoin(
-                    viewAs == "list" && "text-[#1ed760]",
-                    "flex gap-3"
-                  )}
-                >
-                  <ListBulletIcon className=" size-6" />
-                  <span>List</span>
-                </div>
-                {viewAs == "list" && (
-                  <CheckIcon className="size-6 text-[#1ed760]" />
-                )}
-              </span>
-              <span
-                className="flex gap-3 justify-between hover:bg-neutral-600 bg-[#3d3d3d] p-3"
-                onClick={() => setViewAs("grid")}
-              >
-                <div
-                  className={twJoin(
-                    viewAs == "grid" && "text-[#1ed760]",
-                    "flex gap-3"
-                  )}
-                >
-                  <Squares2X2Icon className=" size-6" />
-                  <span>Grid</span>
-                </div>
-                {viewAs == "grid" && (
-                  <CheckIcon className="size-6 text-[#1ed760]" />
-                )}
-              </span>
+              <div
+                className={`absolute top-0 left-0 bottom-0 rounded-lg w-0 bg-neutral-600 sidebarSearch ${
+                  toggleSearch ? "w-full" : ""
+                }`}
+              />
+              <MagnifyingGlassIcon
+                ref={toggleSearchButtonRef}
+                className={`size-8 text-neutral-400 p-1 bg-transparent pl-2 z-10 rounded-full ${
+                  toggleSearch
+                    ? "z-1 cursor-text"
+                    : "hover:bg-neutral-600 cursor-pointer"
+                }`}
+                onClick={() => {
+                  !toggleSearch && setToggleSearch(!toggleSearch);
+                }}
+              />
+              <input
+                type="text"
+                placeholder="Search your library"
+                className={`${
+                  toggleSearch
+                    ? "absolute top-0 left-7"
+                    : "cursor-default opacity-0 w-0"
+                } p-1 rounded-r-lg bg-transparent text-neutral-400 outline-none opacity-100`}
+              />
             </div>
-          )}
-        </div>
+
+            <div className="flex place-items-center relative">
+              <div
+                ref={toggleButtonRef}
+                className="hover:text-neutral-200 hover:text-[1.05rem] flex gap-2 z-10"
+                onClick={() => {
+                  setToggleLayout(!toggleLayout);
+                }}
+              >
+                <span className={`font-light ${toggleSearch ? "hidden" : ""}`}>
+                  Recents
+                </span>
+                {viewAs == "grid" ? (
+                  <Squares2X2Icon className=" size-6" />
+                ) : viewAs == "list" ? (
+                  <ListBulletIcon className=" size-6" />
+                ) : (
+                  <Bars3Icon className=" size-6" />
+                )}
+              </div>
+              {toggleLayout && (
+                <div
+                  ref={toggleLayoutRef}
+                  className="absolute -bottom-40 w-44 flex flex-col right-0 bg-[#3d3d3d] p-1 rounded-lg"
+                >
+                  <span
+                    className="flex gap-3 justify-between hover:bg-neutral-600 bg-[#3d3d3d] p-3"
+                    onClick={() => setViewAs("compact")}
+                  >
+                    <div
+                      className={twJoin(
+                        viewAs == "compact" && "text-[#1ed760]",
+                        "flex gap-3"
+                      )}
+                    >
+                      <Bars3Icon className=" size-6" />
+                      <span>Compact</span>
+                    </div>
+                    {viewAs == "compact" && (
+                      <CheckIcon className="size-6 text-[#1ed760]" />
+                    )}
+                  </span>
+                  <span
+                    className="flex gap-3 justify-between hover:bg-neutral-600 bg-[#3d3d3d] p-3"
+                    onClick={() => setViewAs("list")}
+                  >
+                    <div
+                      className={twJoin(
+                        viewAs == "list" && "text-[#1ed760]",
+                        "flex gap-3"
+                      )}
+                    >
+                      <ListBulletIcon className=" size-6" />
+                      <span>List</span>
+                    </div>
+                    {viewAs == "list" && (
+                      <CheckIcon className="size-6 text-[#1ed760]" />
+                    )}
+                  </span>
+                  <span
+                    className="flex gap-3 justify-between hover:bg-neutral-600 bg-[#3d3d3d] p-3"
+                    onClick={() => setViewAs("grid")}
+                  >
+                    <div
+                      className={twJoin(
+                        viewAs == "grid" && "text-[#1ed760]",
+                        "flex gap-3"
+                      )}
+                    >
+                      <Squares2X2Icon className=" size-6" />
+                      <span>Grid</span>
+                    </div>
+                    {viewAs == "grid" && (
+                      <CheckIcon className="size-6 text-[#1ed760]" />
+                    )}
+                  </span>
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
+
       {loading ? (
         <div>loading...</div>
       ) : (
-        <div className="flex flex-col gap-3 overflow-auto">
+        <div
+          className={twJoin(
+            "flex flex-wrap gap-3 overflow-auto",
+            width > 240 && "flex-col flex-nowrap"
+          )}
+        >
           {playLists.map((playList, idx) => {
             const { images, id, name } = playList;
             return (
               <div
                 key={playList.id}
-                className="flex gap-3 place-items-center cursor-pointer"
+                className="flex gap-3 place-items-center cursor-pointer shrink-0"
                 onClick={() => getPlayListFromId(id)}
               >
                 {viewAs !== "compact" &&
@@ -284,7 +305,7 @@ const Sidebar = () => {
                     // if no image is available
                     <div
                       className={twJoin(
-                        `text-neutral-400 bg-neutral-800 flex justify-center place-items-center border`,
+                        `text-neutral-400 bg-neutral-800  rounded-md flex justify-center place-items-center`,
                         viewAs == "grid"
                           ? `w-[${handleSquareSize()}px] h-[60px] size-[${handleSquareSize()}] border-red-500`
                           : "w-[60px] h-[60px] "
@@ -297,7 +318,7 @@ const Sidebar = () => {
                 {/* compact and list view */}
                 {width > 240
                   ? viewAs !== "grid" && (
-                      <p className="text-white text-[1rem]">{name}</p>
+                      <p className="text-white text-[1rem] truncate">{name}</p>
                     )
                   : ""}
               </div>

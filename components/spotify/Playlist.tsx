@@ -1,29 +1,43 @@
 import Image from "next/image";
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { MusicalNoteIcon } from "@heroicons/react/24/solid";
 import { useSpotifyContext } from "../SpotifyContext";
 import Song from "./Song";
+import { useMediaQuery } from "usehooks-ts";
+import { twJoin } from "tailwind-merge";
 
-const Playlist = () => {
+import { ClockIcon } from "@heroicons/react/24/outline";
+const Playlist = ({ width }: { width: number }) => {
   const { selectedPlaylist } = useSpotifyContext();
-  console.log(selectedPlaylist);
+
+  const isMobile = useMediaQuery("(max-width: 767px");
+  const isTablet = useMediaQuery("(min-width: 768px) and (max-width: 1023px");
+  const isDesktop = useMediaQuery("(min-width: 1024px");
   return (
     <div className="w-full text-neutral-300 text-[.75rem]">
-      {/* SELECTED PLAYLIST */}
-
       <div className="border-b border-neutral-600 flex justify-between my-1 pb-2">
         <div className="flex flex-1 gap-4 place-items-center">
           <span className="w-10 text-right">#</span>
-          <span className="w-96">Title</span>
+          <span className={twJoin("w-96", width <= 500 && "w-fit")}>Title</span>
         </div>
-        <span className="flex-1 text-left w-36">Album</span>
-        <span className="flex-1 text-left w-36">Date added</span>
-        <span className="text-right w-[70px] mr-6">Time</span>
+
+        {width > 650 && <span className="flex-1 text-left w-36">Album</span>}
+        {width > 850 && (
+          <span className="flex-1 text-left w-36">Date added</span>
+        )}
+        <span
+          className={twJoin(
+            "text-right w-fit mr-6",
+            width < 650 && "flex justify-end flex-1"
+          )}
+        >
+          <ClockIcon className="size-6" />
+        </span>
       </div>
       <div className="flex flex-col gap-4 text-white mt-6">
         {selectedPlaylist?.map((song, idx) => (
           <Fragment key={song.track.id}>
-            <Song order={idx} song={song} />
+            <Song order={idx} song={song} width={width} />
           </Fragment>
         ))}
       </div>

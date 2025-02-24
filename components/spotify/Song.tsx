@@ -3,8 +3,9 @@ import { MusicalNoteIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 
 import { useSpotifyContext } from "../SpotifyContext";
+import { twJoin } from "tailwind-merge";
 
-const Song = ({ order, song }: any) => {
+const Song = ({ order, song, width }: any) => {
   const { setCurrentTrackId } = useSpotifyContext();
   const { track, added_at } = song;
   //   const [currentTrackId, setCurrentTrackId] = useState(track.id);
@@ -46,14 +47,6 @@ const Song = ({ order, song }: any) => {
 
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   }
-  // function playSong()  {
-  //   setCurrentTrackId(track.id);
-  //   setIsPlaying(true);
-  //   spotifyApi.play({
-  //     uris: [track.rui],
-  //   });
-  // }
-
   return (
     <div
       className="flex place-items-center text-neutral-400"
@@ -61,7 +54,12 @@ const Song = ({ order, song }: any) => {
     >
       <div className="flex gap-4 place-items-center">
         <span className="text-right w-10">{order + 1}</span>
-        <div className="flex place-items-center w-96 gap-3">
+        <div
+          className={twJoin(
+            "flex place-items-center w-96 gap-3",
+            width <= 500 && "w-fit"
+          )}
+        >
           {track.album.images !== null ? (
             <div>
               <Image
@@ -87,10 +85,21 @@ const Song = ({ order, song }: any) => {
         </div>
       </div>
 
-      <span className="text-left flex-1 w-36 truncate">{track.album.name}</span>
-      <span className="text-left flex-1 w-36 ">{timeSince(added_at)}</span>
+      {width > 650 && (
+        <span className="text-left flex-1 w-36 truncate">
+          {track.album.name}
+        </span>
+      )}
 
-      <span className="text-right w-[70px] mr-6">
+      {width > 850 && (
+        <span className="text-left flex-1 w-36 ">{timeSince(added_at)}</span>
+      )}
+      <span
+        className={twJoin(
+          "text-right w-fit mr-6",
+          width < 650 && "flex justify-end flex-1"
+        )}
+      >
         {millisecondsToMinutesSeconds(track.duration_ms)}
       </span>
     </div>
