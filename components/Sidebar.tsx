@@ -117,8 +117,6 @@ const Sidebar = () => {
     if (isTablet) return 10;
     if (isDesktop) return 5;
   };
-
-  const panel = document.getElementById("sidebar")?.offsetWidth;
   const panelRef = useRef(null);
   const [width, setWidth] = useState(0);
 
@@ -145,8 +143,6 @@ const Sidebar = () => {
   const onExpandLibrary = () => {
     return true;
   };
-
-  // console.log(width);
   return (
     <Panel
       id="sidebar"
@@ -318,7 +314,18 @@ const Sidebar = () => {
                 {/* compact and list view */}
                 {width > 240
                   ? viewAs !== "grid" && (
-                      <p className="text-white text-[1rem] truncate">{name}</p>
+                      <div className="flex justify-between">
+                        <p className="text-white text-[1rem] truncate">
+                          {name}
+                        </p>
+
+                        {/* <p className="text-white text-[1rem] truncate">
+                          {name} date_added
+                        </p>
+                        <p className="text-white text-[1rem] truncate">
+                          {name} recently played
+                        </p> */}
+                      </div>
                     )
                   : ""}
               </div>

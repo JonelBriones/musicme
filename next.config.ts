@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
         hostname: "i.scdn.co",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "api.lyrics.ovh/v1",
+        pathname: "**",
+      },
     ],
   },
 };

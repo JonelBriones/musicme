@@ -1,18 +1,12 @@
 import Image from "next/image";
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { MusicalNoteIcon } from "@heroicons/react/24/solid";
 import { useSpotifyContext } from "../SpotifyContext";
 import Song from "./Song";
-import { useMediaQuery } from "usehooks-ts";
 import { twJoin } from "tailwind-merge";
 
 import { ClockIcon } from "@heroicons/react/24/outline";
 const Playlist = ({ width }: { width: number }) => {
   const { selectedPlaylist } = useSpotifyContext();
-
-  const isMobile = useMediaQuery("(max-width: 767px");
-  const isTablet = useMediaQuery("(min-width: 768px) and (max-width: 1023px");
-  const isDesktop = useMediaQuery("(min-width: 1024px");
   return (
     <div className="w-full text-neutral-300 text-[.75rem]">
       <div className="border-b border-neutral-600 flex justify-between my-1 pb-2">

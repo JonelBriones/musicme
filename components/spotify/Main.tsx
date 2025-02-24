@@ -36,7 +36,6 @@ const Main = () => {
       }
     };
   }, []);
-  console.log(width);
   return (
     <Panel id="main" order={2} minSize={mobileMaxSize()}>
       <div

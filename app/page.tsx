@@ -10,7 +10,7 @@ import useSpotify from "@/components/hooks/useSpotify";
 import { useEffect } from "react";
 import { redirect } from "next/navigation";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-
+import { useData } from "@/components/hooks/useData";
 export default function Home() {
   const { data: session, status } = useSession();
   const spotifyApi = useSpotify();
@@ -25,6 +25,8 @@ export default function Home() {
       console.log("no entry");
     }
   }, [session, spotifyApi]);
+  const songExample = useData();
+  console.log("song example", songExample);
   return (
     <div className="flex flex-col text-[1rem] h-screen p-4">
       <TopBar />

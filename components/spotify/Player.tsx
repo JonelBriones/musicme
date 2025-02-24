@@ -15,12 +15,14 @@ import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import { QueueListIcon } from "@heroicons/react/24/solid";
 import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/solid";
+import { useData } from "../hooks/useData";
 
 const Player = () => {
   const { data: session } = useSession();
   const songInfo = useSongInfo();
 
   const spotifyApi = useSpotify();
+
   const { currentTrackId, setCurrentTrackId, setIsPlaying, isPlaying } =
     useSpotifyContext();
   const [volume, setVolume] = useState(20);
@@ -29,11 +31,8 @@ const Player = () => {
   const fetchCurrentTrack = () => {
     if (!songInfo) {
       spotifyApi.getMyCurrentPlayingTrack().then((data) => {
-        console.log("current track", data);
         setCurrentTrackId(data.body?.item?.id);
-        console.log();
         spotifyApi.getMyCurrentPlaybackState().then((data) => {
-          console.log("current playback state", data.body);
           setIsPlaying(data.body?.is_playing);
           setSeek(data.body?.progress_ms / 1000);
         });
@@ -46,7 +45,6 @@ const Player = () => {
 
     if (songInfo) {
       spotifyApi.getMyCurrentPlaybackState().then((data) => {
-        console.log("current playback state", data);
         if (data.body?.is_playing) {
           spotifyApi.pause();
           setIsPlaying(false);
@@ -155,6 +153,7 @@ const Player = () => {
     }, 1000),
     []
   );
+  console.log(songInfo);
   return (
     <div className="flex place-items-center text-neutral-400 min-w-screen-md">
       <div className="flex flex-1 gap-4">
