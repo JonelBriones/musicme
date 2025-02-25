@@ -136,6 +136,7 @@ const Sidebar = () => {
       setWidth(width);
       if (width < 270) {
         setToggleSearch(false);
+        setViewAs("grid");
       }
     });
 
@@ -147,7 +148,7 @@ const Sidebar = () => {
       }
     };
   }, []);
-
+  console.log(width);
   const onExpandLibrary = () => {
     return true;
   };

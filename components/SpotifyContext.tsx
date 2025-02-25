@@ -133,6 +133,11 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
+  useEffect(() => {
+    console.log(session);
+    console.log(spotifyApi._credentials);
+  }, []);
+
   return (
     <ThemeContext.Provider
       value={{

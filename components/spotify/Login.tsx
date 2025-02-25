@@ -6,7 +6,6 @@ import React, { useEffect, useState } from "react";
 
 const Login = () => {
   const [providers, setProviders] = useState(null);
-  const { data: session } = useSession();
   useEffect(() => {
     const setAuthProviders = async () => {
       const res = await getProviders();
@@ -15,8 +14,6 @@ const Login = () => {
     };
     setAuthProviders();
   }, []);
-  console.log("session", session);
-  console.log("session", providers);
 
   if (providers == null) return <div>loading...</div>;
   return (

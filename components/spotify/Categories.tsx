@@ -18,7 +18,11 @@ const Categories = () => {
     };
     fetchSongInfo();
   }, []);
-  return <div className="text-white">Categories</div>;
+  return (
+    <div className="flex flex-col text-[1rem] h-screen p-4 text-white backgroundContainer">
+      Categories
+    </div>
+  );
 };
 
 export default Categories;
