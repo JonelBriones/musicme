@@ -11,6 +11,7 @@ const useSpotify = () => {
       }
       console.log("spotify hook", spotifyApi);
       spotifyApi.setAccessToken(session.user.accessToken);
+      localStorage.setItem("spotify_access_token", session.user.accessToken);
     }
   }, [session]);
   return spotifyApi;

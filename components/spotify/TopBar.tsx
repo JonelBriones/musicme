@@ -1,3 +1,4 @@
+"use client";
 import { signOut, useSession } from "next-auth/react";
 import React, { useEffect } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";

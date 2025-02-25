@@ -1,5 +1,5 @@
+"use client";
 import React, { useCallback, useEffect, useState } from "react";
-import useSongInfo from "../hooks/useSongInfo";
 import useSpotify from "../hooks/useSpotify";
 import { useSpotifyContext } from "../SpotifyContext";
 import { useSession } from "next-auth/react";
@@ -15,16 +15,21 @@ import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import { QueueListIcon } from "@heroicons/react/24/solid";
 import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/solid";
-import { useData } from "../hooks/useData";
+import spotifyApi from "@/lib/spotify";
 
 const Player = () => {
   const { data: session } = useSession();
-  const songInfo = useSongInfo();
+  // const songInfo = useSongInfo();
 
-  const spotifyApi = useSpotify();
+  // const spotifyApi = useSpotify();
 
-  const { currentTrackId, setCurrentTrackId, setIsPlaying, isPlaying } =
-    useSpotifyContext();
+  const {
+    currentTrackId,
+    setCurrentTrackId,
+    setIsPlaying,
+    isPlaying,
+    songInfo,
+  } = useSpotifyContext();
   const [volume, setVolume] = useState(20);
   const [seek, setSeek] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -153,7 +158,6 @@ const Player = () => {
     }, 1000),
     []
   );
-  console.log(songInfo);
   return (
     <div className="flex place-items-center text-neutral-400 min-w-screen-md">
       <div className="flex flex-1 gap-4">

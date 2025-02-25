@@ -1,4 +1,5 @@
 "use client";
+import spotifyApi from "@/lib/spotify";
 import React, { useEffect, useState } from "react";
 
 const Categories = () => {
@@ -17,7 +18,7 @@ const Categories = () => {
     };
     fetchSongInfo();
   }, []);
-  return <div>Categories</div>;
+  return <div className="text-white">Categories</div>;
 };
 
 export default Categories;

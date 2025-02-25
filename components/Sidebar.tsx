@@ -21,13 +21,18 @@ import {
   CheckIcon,
   Bars3Icon,
 } from "@heroicons/react/24/solid";
-import { redirect } from "next/navigation";
 import { Panel } from "react-resizable-panels";
 import { useMediaQuery } from "usehooks-ts";
+import Link from "next/link";
 
 const Sidebar = () => {
   const { data: session } = useSession();
-  const { getPlayListFromId, selectedPlaylist } = useSpotifyContext();
+  const {
+    getPlayListFromId,
+    selectedPlaylist,
+    getUserPlaylists,
+    userPlaylist,
+  } = useSpotifyContext();
   const spotifyApi = useSpotify();
   const [playLists, setPlaylists] = useState([]);
   const [playList, setPlaylist] = useState([]);
@@ -35,21 +40,24 @@ const Sidebar = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (spotifyApi.getAccessToken()) {
-      console.log("access token", spotifyApi._credentials);
-
-      spotifyApi
-        .getUserPlaylists()
-        .then((data) => {
-          setPlaylists(data.body.items);
-          console.log("PLAYLIST", data.body.items);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          redirect("/login");
-        });
+    if (userPlaylist.length == 0) {
+      getUserPlaylists();
+      setLoading(false);
     }
+    // if (spotifyApi.getAccessToken()) {
+    //   console.log("access token", spotifyApi._credentials);
+    //   spotifyApi
+    //     .getUserPlaylists()
+    //     .then((data) => {
+    //       setPlaylists(data.body.items);
+    //       console.log("PLAYLIST", data.body.items);
+    //       setLoading(false);
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //       redirect("/login");
+    //     });
+    // }
   }, [session, spotifyApi]);
 
   const [viewAs, setViewAs] = useState("list");
@@ -280,13 +288,14 @@ const Sidebar = () => {
             width > 240 && "flex-col flex-nowrap"
           )}
         >
-          {playLists.map((playList, idx) => {
+          {userPlaylist.map((playList, idx) => {
             const { images, id, name } = playList;
             return (
-              <div
-                key={playList.id}
-                className="flex gap-3 place-items-center cursor-pointer shrink-0"
-                onClick={() => getPlayListFromId(id)}
+              <Link
+                key={id}
+                className="flex gap-3 place-items-center cursor-pointer shrink-0 overflow-hidden"
+                href={`/playlist/${id}`}
+                // onClick={() => getPlayListFromId(id, playList)}
               >
                 {viewAs !== "compact" &&
                   (images !== null ? (
@@ -314,8 +323,8 @@ const Sidebar = () => {
                 {/* compact and list view */}
                 {width > 240
                   ? viewAs !== "grid" && (
-                      <div className="flex justify-between">
-                        <p className="text-white text-[1rem] truncate">
+                      <div className="flex justify-between overflow-hidden">
+                        <p className="text-white text-[1rem] w-full truncate">
                           {name}
                         </p>
 
@@ -328,7 +337,7 @@ const Sidebar = () => {
                       </div>
                     )
                   : ""}
-              </div>
+              </Link>
             );
           })}
         </div>
