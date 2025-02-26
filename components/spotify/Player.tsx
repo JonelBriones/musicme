@@ -16,6 +16,7 @@ import { QueueListIcon } from "@heroicons/react/24/solid";
 import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/solid";
 import spotifyApi from "@/lib/spotify";
+import { twJoin } from "tailwind-merge";
 
 const Player = () => {
   const { data: session } = useSession();
@@ -34,61 +35,82 @@ const Player = () => {
   const [volume, setVolume] = useState(20);
   const [seek, setSeek] = useState(0);
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    // get current track on first render
-    if (spotifyApi.getAccessToken() && !currentTrackId) {
-      console.log("fetching");
-      fetchCurrentTrack();
-      setLoading(false);
-    }
-  }, [currentTrackId, spotifyApi, session]);
-  useEffect(() => {
-    if (songInfo) {
-      console.log(songInfo.item.duration_ms / 1000);
-      setSeek(songInfo.item.duration_ms / 1000);
-      setIsPlaying(true);
-    }
-  }, [songInfo]);
-  const handlePlayPause = () => {
-    // check if a song is currently playing,
-    // if song is currently playing, set new
+  const [repeatTrack, setRepeatTrack] = useState("off");
+  const repeatOptions = ["off", "context", "track"];
 
-    if (songInfo) {
-      spotifyApi.getMyCurrentPlaybackState().then((data) => {
-        if (data.body?.is_playing) {
-          spotifyApi.pause();
-          setIsPlaying(false);
-        } else {
-          spotifyApi.play();
-          setIsPlaying(true);
-        }
-      });
-    }
-  };
   function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
+  useEffect(() => {
+    // get current track on first render
+    if (spotifyApi.getAccessToken() && !currentTrackId && !songInfo) {
+      fetchCurrentTrack();
+      setLoading(false);
+    }
+    if (songInfo) {
+      setIsPlaying(songInfo.is_playing);
+      setSeek(songInfo.progress_ms / 1000);
+      setSeconds(songInfo.progress_ms / 1000);
+      console.log(songInfo.repeat_state);
+      setRepeatTrack(songInfo.repeat_state);
+    }
+  }, [currentTrackId, spotifyApi, session, songInfo]);
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    // console.log("is playing?", isPlaying ? "true" : "false");
+
+    const time = Math.round((seconds * 10) / 10);
+    const trackTotalSeconds = Math.round(
+      ((songInfo?.item.duration_ms / 1000) * 10) / 10
+    );
+
+    if (!isPlaying) return;
+    if (isPlaying && time >= trackTotalSeconds - 1) {
+      setSeconds(0);
+      fetchCurrentTrack();
+      handleSecondsRestart();
+    }
+    let intervalId: NodeJS.Timeout;
+
+    intervalId = setInterval(() => {
+      setSeconds((prevSeconds) => prevSeconds + 1);
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, [seconds, isPlaying]);
+
+  const handleSecondsRestart = async () => {
+    await sleep(4000);
+  };
+
+  const handlePlayPause = () => {
+    if (isPlaying) {
+      spotifyApi.pause();
+      setIsPlaying(false);
+    } else {
+      spotifyApi.play();
+      setIsPlaying(true);
+    }
+  };
 
   const handleSkipPrevious = async () => {
-    setIsPlaying(false);
     if (songInfo) {
+      setSeconds(0);
       spotifyApi.skipToPrevious();
-      await sleep(1000);
-      spotifyApi.getMyCurrentPlayingTrack().then((data) => {
-        setCurrentTrackId(data.body?.item?.id);
-        setIsPlaying(true);
-      });
+      await sleep(2000);
+      fetchCurrentTrack();
     }
   };
   const handleSkipNext = async () => {
-    setIsPlaying(false);
-    if (songInfo) {
-      spotifyApi.skipToNext();
+    const skip = async () => {
       await sleep(1000);
-      spotifyApi.getMyCurrentPlayingTrack().then((data) => {
-        setCurrentTrackId(data.body?.item?.id);
-        setIsPlaying(true);
-      });
+      spotifyApi.skipToNext();
+    };
+
+    if (songInfo) {
+      setSeconds(0);
+      spotifyApi.skipToNext();
+      fetchCurrentTrack();
     }
   };
   const handleShuffle = () => {
@@ -100,16 +122,9 @@ const Player = () => {
       });
     }
   };
-
-  const handleRepeat = () => {
-    if (songInfo) {
-      spotifyApi.getMyCurrentPlaybackState().then((data) => {
-        console.log(data);
-        if (data.body?.is_playing) {
-          spotifyApi.setRepeat(songInfo);
-        }
-      });
-    }
+  useEffect(() => {}, [repeatTrack]);
+  const handleRepeat = (option) => {
+    spotifyApi.setRepeat(option);
   };
 
   function millisecondsToMinutesSeconds(milliseconds: number) {
@@ -154,6 +169,7 @@ const Player = () => {
     }, 1000),
     []
   );
+
   return (
     <div className="flex place-items-center text-neutral-400 min-w-screen-md">
       <div className="flex flex-1 gap-4">
@@ -205,20 +221,60 @@ const Player = () => {
             className=" size-6 text-neutral-400"
             onClick={handleSkipNext}
           />
-          <ArrowPathIcon
-            className=" size-6 text-neutral-400"
-            onClick={handleRepeat}
-          />
+          <span className="relative">
+            <ArrowPathIcon
+              className={twJoin(
+                "size-6 z-10 sticky ",
+                repeatTrack == "off"
+                  ? "text-neutral-400 hover:text-neutral-300"
+                  : "text-[#1ed760]"
+              )}
+              onClick={() => {
+                if (repeatTrack == "off") {
+                  setRepeatTrack("context");
+                  handleRepeat("context");
+                }
+                if (repeatTrack == "context") {
+                  setRepeatTrack("track");
+                  handleRepeat("track");
+                }
+                if (repeatTrack == "track") {
+                  setRepeatTrack("off");
+                  handleRepeat("off");
+                }
+              }}
+            />
+            {repeatTrack == "context" && (
+              <span className="bg-[#1ed760] w-[5px] h-[5px] rounded-full absolute -bottom-2 left-0 right-0 m-auto" />
+            )}
+            {repeatTrack == "track" && (
+              <>
+                <span
+                  className="text-[#1ed760] absolute text-sm left-2 top-[1.5px]"
+                  onClick={() => console.log(1)}
+                >
+                  1
+                </span>
+                <span className="bg-[#1ed760] w-[5px] h-[5px] rounded-full absolute -bottom-2 left-0 right-0 m-auto " />
+              </>
+            )}
+          </span>
         </div>
         <div className="text-[0.875rem] flex place-items-center gap-2">
-          {songInfo && <span>{millisecondsToMinutesSeconds(seek * 1000)}</span>}
+          {/* {songInfo && <span>{millisecondsToMinutesSeconds(seek * 1000)}</span>} */}
+          {songInfo && (
+            <span>{millisecondsToMinutesSeconds(seconds * 1000)}</span>
+          )}
           <input
             type="range"
             min={0}
             max={(songInfo?.item.duration_ms / 1000).toString()}
             value={songInfo ? seek : 0}
             step={0.01}
-            onChange={(e) => setSeek(Number(e.target.value))}
+            onChange={(e) => {
+              setSeek(Number(e.target.value));
+              setSeconds(Number(e.target.value));
+            }}
             className="w-80 disabled:"
             disabled={!songInfo}
           />

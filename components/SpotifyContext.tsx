@@ -21,6 +21,7 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
   const [songInfo, setSongInfo] = useState(null);
   const [MainContainerWidth, setMainContainerWidth] = useState(0);
   const [SideAndMainWidth, setSideAndMainWidth] = useState(0);
+
   const param = useParams();
   const { data: session, status } = useSession();
   const spotifyApi = useSpotify();
@@ -31,15 +32,13 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
 
   const fetchCurrentTrack = () => {
     console.log("fetching track");
-
-    if (!songInfo) {
-      spotifyApi.getMyCurrentPlayingTrack().then((data) => {
-        setCurrentTrackId(data.body?.item?.id);
-        spotifyApi.getMyCurrentPlaybackState().then((data) => {
-          setSongInfo(data.body);
-        });
+    spotifyApi.getMyCurrentPlayingTrack().then((data) => {
+      setCurrentTrackId(data.body?.item?.id);
+      spotifyApi.getMyCurrentPlaybackState().then((data) => {
+        // setIsPlaying(data.body.is_playing);
+        setSongInfo(data.body);
       });
-    }
+    });
   };
 
   const getPlayListFromId = (id: string): any => {
