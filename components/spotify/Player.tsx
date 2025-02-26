@@ -36,6 +36,7 @@ const Player = () => {
   const [volume, setVolume] = useState(20);
   const [seek, setSeek] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [showSeekbar, setSeekbar] = useState(false);
 
   const [repeatTrack, setRepeatTrack] = useState("off");
 
@@ -43,31 +44,24 @@ const Player = () => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
   useEffect(() => {
-    console.log("top render");
-    // get current track on first render
+    const timer = setTimeout(() => {
+      setSeekbar(true);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+  useEffect(() => {
     if (spotifyApi.getAccessToken() && !currentTrackId && !songInfo) {
       fetchCurrentTrack();
       setLoading(false);
     }
     if (songInfo) {
-      console.log(songInfo);
-      // setIsPlaying(songInfo.is_playing);
-      // setSeek(songInfo.progress_ms / 1000);
-      // spotifyApi.seek(seek * 1000);
       setSeconds(songInfo.progress_ms / 1000);
       setLoading(false);
       setRepeatTrack(songInfo.repeat_state);
     }
   }, [spotifyApi, session, songInfo]);
   const [seconds, setSeconds] = useState(0);
-
-  // useEffect(()=>{
-  //   spotifyApi.seek(seek * 1000)
-  // },[])
-
   useEffect(() => {
-    // console.log("is playing?", isPlaying ? "true" : "false");
-
     const time = Math.round((seconds * 10) / 10);
     const trackTotalSeconds = Math.round(
       ((songInfo?.item.duration_ms / 1000) * 10) / 10
@@ -76,7 +70,6 @@ const Player = () => {
     if (!isPlaying) return;
     if (isPlaying && time >= trackTotalSeconds - 1) {
       fetchCurrentPlayBackState();
-      handleSecondsRestart();
       setLoading(true);
     }
     let intervalId: NodeJS.Timeout;
@@ -86,11 +79,6 @@ const Player = () => {
     }, 1000);
     return () => clearInterval(intervalId);
   }, [seconds, isPlaying]);
-
-  const handleSecondsRestart = async () => {
-    await sleep(1000);
-    // setSeconds(0);
-  };
 
   const handlePlayPause = () => {
     if (isPlaying) {
@@ -127,7 +115,6 @@ const Player = () => {
       });
     }
   };
-  useEffect(() => {}, [repeatTrack]);
   const handleRepeat = (option) => {
     spotifyApi.setRepeat(option);
   };
@@ -193,7 +180,7 @@ const Player = () => {
             />
           </div>
         ) : (
-          <div className="flex place-items-center justify-center bg-neutral-800 rounded-md h-[60px] w-[60px] ">
+          <div className="flex place-items-center justify-center bg-neutral-800 rounded-md size-16 ">
             <MusicalNoteIcon className=" size-7 text-neutral-400" />
           </div>
         )}
@@ -204,7 +191,7 @@ const Player = () => {
           </span>
         </div>
       </div>
-      <div className="flex flex-col justify-center gap-3">
+      <div className="flex flex-col place-items-center w-[440px] h-full">
         <div className="flex justify-center place-items-center shrink-0 gap-4">
           <ArrowsRightLeftIcon
             className="  size-6 text-neutral-400 hover:text-white transition-transform duration-100 hover:scale-105"
@@ -268,30 +255,31 @@ const Player = () => {
             )}
           </span>
         </div>
-        <div className="text-[0.875rem] flex place-items-center gap-2">
-          {/* {songInfo && <span>{millisecondsToMinutesSeconds(seek * 1000)}</span>} */}
-          {songInfo && (
-            <span>{millisecondsToMinutesSeconds(seconds * 1000)}</span>
-          )}
-          <input
-            type="range"
-            min={0}
-            max={(songInfo?.item.duration_ms / 1000).toString()}
-            value={songInfo ? seconds : 0}
-            step={0.01}
-            onChange={(e) => {
-              setSeek(Number(e.target.value));
-              setSeconds(Number(e.target.value));
-            }}
-            className="w-80 disabled:"
-            disabled={!songInfo}
-          />
-          {songInfo && (
-            <span>
-              {millisecondsToMinutesSeconds(songInfo?.item.duration_ms)}
-            </span>
-          )}
-        </div>
+        {showSeekbar && (
+          <div className="text-[0.875rem] flex place-items-center gap-2">
+            {songInfo && (
+              <span>{millisecondsToMinutesSeconds(seconds * 1000)}</span>
+            )}
+            <input
+              type="range"
+              min={0}
+              max={(songInfo?.item.duration_ms / 1000).toString()}
+              value={songInfo ? seconds : 0}
+              step={0.01}
+              onChange={(e) => {
+                setSeek(Number(e.target.value));
+                setSeconds(Number(e.target.value));
+              }}
+              className="w-80 disabled:"
+              disabled={!songInfo}
+            />
+            {songInfo && (
+              <span>
+                {millisecondsToMinutesSeconds(songInfo?.item.duration_ms)}
+              </span>
+            )}
+          </div>
+        )}
       </div>
       <div className="flex-1 flex gap-2 justify-center shrink-0">
         {volume > 0 ? (
