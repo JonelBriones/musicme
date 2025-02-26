@@ -8,9 +8,11 @@ import { useSpotifyContext } from "../SpotifyContext";
 import { twJoin } from "tailwind-merge";
 
 const Song = ({ order, song, width }: any) => {
-  const { selectedTrack, setSelectedTrack } = useSpotifyContext();
-  const { track, added_at } = song;
-  //   const [currentTrackId, setCurrentTrackId] = useState(track.id);
+  const { selectedTrack, setSelectedTrack, getSelectedTrack } =
+    useSpotifyContext();
+
+  const { added_at } = song;
+  //   const [currentTrackId, setCurrentTrackId] = useState(song.track.id);
   //   const [isPlaying, setIsPlaying] = useState(false);
   function timeSince(added_at: string) {
     const date = new Date(added_at).getTime();
@@ -49,13 +51,15 @@ const Song = ({ order, song, width }: any) => {
 
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   }
+  console.log(song);
+
   return (
     <div
       className={twJoin(
         "flex place-items-center text-neutral-400 rounded-md py-2",
-        selectedTrack == track?.id ? "bg-neutral-500" : "hover:bg-neutral-700"
+        selectedTrack == song?.id ? "bg-neutral-500" : "hover:bg-neutral-700"
       )}
-      onClick={() => setSelectedTrack(track.id)}
+      onClick={() => setSelectedTrack(song.id)}
     >
       <div className="flex gap-4 place-items-center">
         <span className="text-right w-10">{order + 1}</span>
@@ -67,13 +71,13 @@ const Song = ({ order, song, width }: any) => {
             width <= 500 && "w-fit"
           )}
         >
-          {track.album.images !== null ? (
+          {song?.album?.images !== null ? (
             <div>
               <Image
                 height={40}
                 width={40}
-                alt={track.name + "_img"}
-                src={track.album.images?.[0]?.url}
+                alt={song?.name + "_img"}
+                src={song?.album?.images?.[0]?.url}
                 className="rounded-md min-w-[40px]"
               />
             </div>
@@ -85,16 +89,16 @@ const Song = ({ order, song, width }: any) => {
 
           <div className="flex w-36 flex-col">
             <span className="text-white text-[.875rem] truncate">
-              {track.name}
+              {song.name}
             </span>
-            <span className="truncate">{track.artists[0].name}</span>
+            <span className="truncate">{song?.artists?.[0].name}</span>
           </div>
         </div>
       </div>
 
       {width > 650 && (
         <span className="text-left flex-1 w-36 truncate">
-          {track.album.name}
+          {song?.album?.name}
         </span>
       )}
 
@@ -107,7 +111,7 @@ const Song = ({ order, song, width }: any) => {
           width < 650 && "flex justify-end flex-1"
         )}
       >
-        {millisecondsToMinutesSeconds(track.duration_ms)}
+        {millisecondsToMinutesSeconds(song?.duration_ms)}
       </span>
     </div>
   );

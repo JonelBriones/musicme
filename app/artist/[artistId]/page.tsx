@@ -7,12 +7,12 @@ import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { twJoin } from "tailwind-merge";
-
+// lesserafim id:4SpbR6yFEvexJuaBpgAU5p
 const page = () => {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
 
-  const { playlistId } = useParams() as { playlistId: string };
+  const { artistId } = useParams() as { playlistId: string };
   const { selectedPlaylist, getPlayListFromId } = useSpotifyContext();
   const [playlist, setSelectedPlaylist] = useState<any | null>(null);
   const panelRef = useRef(null);
@@ -22,9 +22,10 @@ const page = () => {
     if (!spotifyApi.getAccessToken()) {
       spotifyApi.setAccessToken(session?.user?.accessToken);
     } else {
-      spotifyApi.getPlaylist(playlistId).then((data) => {
+      spotifyApi.getArtistTopTracks(artistId).then((data) => {
+        console.log(data.body.track);
         setLoading(false);
-        setSelectedPlaylist(data.body.tracks.items.slice(0, 10));
+        setSelectedPlaylist(data.body.tracks);
       });
     }
 
@@ -72,9 +73,9 @@ const page = () => {
             </span>
           </div>
           <div className="flex flex-col gap-2 text-white mt-6">
-            {playlist?.map((song, idx) => (
-              <Fragment key={song?.track?.id}>
-                <Song order={idx} song={song.track} width={width} />
+            {playlist?.map((track, idx) => (
+              <Fragment key={track?.id}>
+                <Song order={idx} song={track} width={width} />
               </Fragment>
             ))}
           </div>

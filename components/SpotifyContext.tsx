@@ -21,6 +21,7 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
   const [songInfo, setSongInfo] = useState(null);
   const [MainContainerWidth, setMainContainerWidth] = useState(0);
   const [SideAndMainWidth, setSideAndMainWidth] = useState(0);
+  const [musicRecommend, setMusicRecommend] = useState([]);
 
   const param = useParams();
   const { data: session, status } = useSession();
@@ -41,7 +42,7 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
     spotifyApi.getMyCurrentPlaybackState().then((data) => {
       // setIsPlaying(data.body.is_playing);
       setSongInfo(data.body);
-      setIsPlaying(data.body.is_playing);
+      setIsPlaying(data.body?.is_playing);
     });
   };
   const getPlayListFromId = (id: string): any => {
@@ -70,21 +71,21 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const getSelectedTrack = async () => {
-    if (currentTrackId) {
-      const trackInfo = await fetch(
-        `https://api.spotify.com/v1/tracks/${currentTrackId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${spotifyApi.getAccessToken()}`,
-          },
-        }
-      ).then((res) => res.json());
-      setSongInfo(trackInfo);
+  const getSelectedTrack = async (id) => {
+    if (spotifyApi.getAccessToken()) {
+      spotifyApi
+        .getTracks(id)
+        .then((data) => {
+          setMusicRecommend([...musicRecommend, data?.body?.items]);
+        })
+        .catch((err) => {
+          console.log(err);
+          redirect("/login");
+        });
     }
   };
 
-  const geArtistInfo = async () => {
+  const getArtistInfo = async (id) => {
     const artistInfo = await fetch(
       `https://api.spotify.com/v1/artists/${selectedSong.artists[0].id}`,
       {
@@ -99,10 +100,11 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
       ...songData,
       artist: artistInfo.name,
       genres: artistInfo.genres,
-      lyrics,
+      // lyrics,
     });
   };
   const getCategories = async () => {
+    console.log("getting categories:");
     const categories = await fetch(
       `https://api.spotify.com/v1/browse/categories`,
       {
@@ -129,10 +131,17 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
 
   // }, [currentTrackId, spotifyApi]);
 
-  const getMyRecentlyPlayedTracks = async () => {
+  const handleMyRecentlyPlayedTracks = async () => {
+    console.log("Retreving recent played tracks");
     spotifyApi.getMyRecentlyPlayedTracks().then((data) => {
-      setRecentlyPlayedTracks(data.body?.items);
+      console.log(data);
+      setRecentlyPlayedTracks(data.body?.items.slice(0, 2));
     });
+
+    // console.log(spotifyApi._credentials);
+    // spotifyApi.getMyRecentlyPlayedTracks().then((data) => {
+    //   setRecentlyPlayedTracks(data.body?.items);
+    // });
   };
 
   return (
@@ -154,6 +163,12 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
         setSelectedTrack,
         fetchCurrentTrack,
         fetchCurrentPlayBackState,
+        getSelectedTrack,
+        getArtistInfo,
+        handleMyRecentlyPlayedTracks,
+        recentlyPlayedTracks,
+        getCategories,
+        categories,
       }}
     >
       {children}

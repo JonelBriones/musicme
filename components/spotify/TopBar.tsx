@@ -40,6 +40,7 @@ const TopBar = () => {
         Welcome {session?.user?.name ? session.user.name : "not logged in"}{" "}
       </h1>
       <div className="flex gap-2 place-items-center">
+        <button>RECOMMEND</button>
         <Link
           href={"/"}
           className="flex place-items-center bg-neutral-800 hover:bg-neutral-800/95 p-6 rounded-full justify-center transition-colors duration-200 relative ease-in-out"
