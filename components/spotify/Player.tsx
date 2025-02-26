@@ -199,11 +199,11 @@ const Player = () => {
       <div className="flex flex-col justify-center gap-3">
         <div className="flex justify-center place-items-center shrink-0 gap-4">
           <ArrowsRightLeftIcon
-            className=" size-6 text-neutral-400"
+            className="  size-6 text-neutral-400 hover:text-white transition-transform duration-100 hover:scale-105"
             onClick={handleShuffle}
           />
           <BackwardIcon
-            className=" size-6 text-neutral-400"
+            className="  size-6 text-neutral-400 hover:text-white transition-transform duration-100 hover:scale-105"
             onClick={handleSkipPrevious}
           />
           {isPlaying ? (
@@ -213,20 +213,20 @@ const Player = () => {
             />
           ) : (
             <PlayCircleIcon
-              className=" size-10 text-neutral-400"
+              className=" size-10 text-neutral-400 hover:text-white transition-transform duration-100 hover:scale-105"
               onClick={handlePlayPause}
             />
           )}
           <ForwardIcon
-            className=" size-6 text-neutral-400"
+            className=" size-6 text-neutral-400 hover:text-white transition-transform duration-100 hover:scale-105"
             onClick={handleSkipNext}
           />
           <span className="relative">
             <ArrowPathIcon
               className={twJoin(
-                "size-6 z-10 sticky ",
+                "size-6 z-10 sticky cursor-pointer mx-2 transition-transform duration-100 hover:scale-105 ",
                 repeatTrack == "off"
-                  ? "text-neutral-400 hover:text-neutral-300"
+                  ? "text-neutral-400 hover:text-white"
                   : "text-[#1ed760]"
               )}
               onClick={() => {
@@ -288,12 +288,12 @@ const Player = () => {
       <div className="flex-1 flex gap-2 justify-center shrink-0">
         {volume > 0 ? (
           <SpeakerWaveIcon
-            className=" size-7 text-neutral-400"
+            className=" size-7 text-neutral-400 transition-transform duration-100 hover:scale-105 cursor-pointer"
             onClick={() => setVolume(0)}
           />
         ) : (
           <SpeakerXMarkIcon
-            className=" size-7 text-neutral-400"
+            className=" size-7 text-neutral-400 transition-transform duration-100 hover:scale-105 cursor-pointer"
             onClick={() => setVolume(50)}
           />
         )}
