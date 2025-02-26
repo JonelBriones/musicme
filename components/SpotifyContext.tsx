@@ -10,7 +10,7 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
   const [selectedPlaylist, setSelectedPlaylist] = useState<any | null>(null);
   const [currentTrackId, setCurrentTrackId] = useState(null);
   const [selectedTrack, setSelectedTrack] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [viewPlaylist, setViewPlaylist] = useState(false);
   const [currentTrack, setCurrentTrack] = useState({});
   const [recentlyPlayedTracks, setRecentlyPlayedTracks] = useState([]);
@@ -34,13 +34,16 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
     console.log("fetching track");
     spotifyApi.getMyCurrentPlayingTrack().then((data) => {
       setCurrentTrackId(data.body?.item?.id);
-      spotifyApi.getMyCurrentPlaybackState().then((data) => {
-        // setIsPlaying(data.body.is_playing);
-        setSongInfo(data.body);
-      });
+      fetchCurrentPlayBackState();
     });
   };
-
+  const fetchCurrentPlayBackState = () => {
+    spotifyApi.getMyCurrentPlaybackState().then((data) => {
+      // setIsPlaying(data.body.is_playing);
+      setSongInfo(data.body);
+      setIsPlaying(data.body.is_playing);
+    });
+  };
   const getPlayListFromId = (id: string): any => {
     console.log(spotifyApi._crendtials);
     console.log(validateAccessToken);
@@ -150,6 +153,7 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
         selectedTrack,
         setSelectedTrack,
         fetchCurrentTrack,
+        fetchCurrentPlayBackState,
       }}
     >
       {children}

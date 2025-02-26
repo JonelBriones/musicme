@@ -31,31 +31,39 @@ const Player = () => {
     isPlaying,
     songInfo,
     fetchCurrentTrack,
+    fetchCurrentPlayBackState,
   } = useSpotifyContext();
   const [volume, setVolume] = useState(20);
   const [seek, setSeek] = useState(0);
   const [loading, setLoading] = useState(true);
+
   const [repeatTrack, setRepeatTrack] = useState("off");
-  const repeatOptions = ["off", "context", "track"];
 
   function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
   useEffect(() => {
+    console.log("top render");
     // get current track on first render
     if (spotifyApi.getAccessToken() && !currentTrackId && !songInfo) {
       fetchCurrentTrack();
       setLoading(false);
     }
     if (songInfo) {
-      setIsPlaying(songInfo.is_playing);
-      setSeek(songInfo.progress_ms / 1000);
+      console.log(songInfo);
+      // setIsPlaying(songInfo.is_playing);
+      // setSeek(songInfo.progress_ms / 1000);
+      // spotifyApi.seek(seek * 1000);
       setSeconds(songInfo.progress_ms / 1000);
-      console.log(songInfo.repeat_state);
+      setLoading(false);
       setRepeatTrack(songInfo.repeat_state);
     }
-  }, [currentTrackId, spotifyApi, session, songInfo]);
+  }, [spotifyApi, session, songInfo]);
   const [seconds, setSeconds] = useState(0);
+
+  // useEffect(()=>{
+  //   spotifyApi.seek(seek * 1000)
+  // },[])
 
   useEffect(() => {
     // console.log("is playing?", isPlaying ? "true" : "false");
@@ -67,9 +75,9 @@ const Player = () => {
 
     if (!isPlaying) return;
     if (isPlaying && time >= trackTotalSeconds - 1) {
-      setSeconds(0);
-      fetchCurrentTrack();
+      fetchCurrentPlayBackState();
       handleSecondsRestart();
+      setLoading(true);
     }
     let intervalId: NodeJS.Timeout;
 
@@ -80,7 +88,8 @@ const Player = () => {
   }, [seconds, isPlaying]);
 
   const handleSecondsRestart = async () => {
-    await sleep(4000);
+    await sleep(1000);
+    // setSeconds(0);
   };
 
   const handlePlayPause = () => {
@@ -102,14 +111,10 @@ const Player = () => {
     }
   };
   const handleSkipNext = async () => {
-    const skip = async () => {
-      await sleep(1000);
-      spotifyApi.skipToNext();
-    };
-
     if (songInfo) {
       setSeconds(0);
       spotifyApi.skipToNext();
+      await sleep(2000);
       fetchCurrentTrack();
     }
   };
@@ -136,6 +141,7 @@ const Player = () => {
   }
 
   useEffect(() => {
+    if (loading) return;
     if (volume >= 0 && volume < 100) {
       debounceAdjustVolume(volume);
     }
@@ -160,11 +166,13 @@ const Player = () => {
   useEffect(() => {
     if (seek > 0 && seek < songInfo?.item.duration_ms / 1000) {
       debounceSeek(seek);
+      console.log("seek", loading);
     }
   }, [seek]);
 
   const debounceSeek = useCallback(
     debounce((seek) => {
+      console.log("seeking", loading);
       spotifyApi.seek(seek * 1000).catch((error) => {});
     }, 1000),
     []
@@ -173,22 +181,22 @@ const Player = () => {
   return (
     <div className="flex place-items-center text-neutral-400 min-w-screen-md">
       <div className="flex flex-1 gap-4">
-        <div className="shrink-0">
-          {songInfo?.item.album?.images !== null &&
-          songInfo?.item.album?.images?.[0]?.url ? (
+        {songInfo?.item.album?.images !== null &&
+        songInfo?.item.album?.images?.[0]?.url ? (
+          <div className="relative size-16">
             <Image
-              height={60}
-              width={60}
+              layout="fill"
+              objectFit="cover"
               alt={songInfo?.item.name + "_img"}
               src={songInfo?.item.album?.images?.[0]?.url}
-              className="rounded-md min-w-[40px]"
+              className="rounded-md cover  "
             />
-          ) : (
-            <div className="flex place-items-center justify-center bg-neutral-800 rounded-md h-[60px] w-[60px] ">
-              <MusicalNoteIcon className=" size-7 text-neutral-400" />
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="flex place-items-center justify-center bg-neutral-800 rounded-md h-[60px] w-[60px] ">
+            <MusicalNoteIcon className=" size-7 text-neutral-400" />
+          </div>
+        )}
         <div className="flex shrink flex-col justify-center max-w-60">
           <span className="text-white truncate">{songInfo?.item.name}</span>
           <span className="text-[.875rem] truncate">
@@ -269,7 +277,7 @@ const Player = () => {
             type="range"
             min={0}
             max={(songInfo?.item.duration_ms / 1000).toString()}
-            value={songInfo ? seek : 0}
+            value={songInfo ? seconds : 0}
             step={0.01}
             onChange={(e) => {
               setSeek(Number(e.target.value));

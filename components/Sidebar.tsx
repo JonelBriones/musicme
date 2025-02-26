@@ -300,8 +300,8 @@ const Sidebar = () => {
                       className={twJoin(
                         `text-neutral-400 bg-neutral-800  rounded-md flex justify-center place-items-center`,
                         viewAs == "grid"
-                          ? `w-[${handleSquareSize()}px] h-[60px] size-[${handleSquareSize()}] border-red-500`
-                          : "w-[60px] h-[60px] "
+                          ? `size-[${handleSquareSize()}px]`
+                          : "w-[60px] h-[60px]"
                       )}
                     >
                       <MusicalNoteIcon className="text-neutral-400 size-7" />
