@@ -19,18 +19,10 @@ const page = () => {
   const [width, setWidth] = useState(0);
   const spotifyApi = useSpotify();
   useEffect(() => {
-    console.log(session);
-    console.log("spotigy", spotifyApi);
-    console.log("SELECTED PLATLIST", playlist);
-    console.log("token before", spotifyApi.getAccessToken());
-
     if (!spotifyApi.getAccessToken()) {
-      console.log("pre");
       spotifyApi.setAccessToken(session?.user?.accessToken);
     } else {
-      console.log("after");
       spotifyApi.getPlaylist(playlistId).then((data) => {
-        console.log("finding playlist...", data.body.tracks.items.slice(0, 10));
         setLoading(false);
         setSelectedPlaylist(data.body.tracks.items.slice(0, 10));
       });
@@ -49,7 +41,7 @@ const page = () => {
         observer.unobserve(panelRef.current);
       }
     };
-  }, [selectedPlaylist, spotifyApi, session]);
+  }, [spotifyApi, session]);
 
   return (
     <div className="flex flex-col text-[1rem] h-screen p-4 text-white backgroundContainer">
@@ -64,7 +56,6 @@ const page = () => {
                 Title
               </span>
             </div>
-
             {width > 650 && (
               <span className="flex-1 text-left w-36">Album</span>
             )}
@@ -80,7 +71,7 @@ const page = () => {
               <ClockIcon className="size-6" />
             </span>
           </div>
-          <div className="flex flex-col gap-4 text-white mt-6">
+          <div className="flex flex-col gap-2 text-white mt-6">
             {playlist?.map((song, idx) => (
               <Fragment key={song?.track?.id}>
                 <Song order={idx} song={song} width={width} />

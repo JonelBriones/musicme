@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { MusicalNoteIcon } from "@heroicons/react/24/solid";
+import { PlayIcon } from "@heroicons/react/24/solid";
+import { PauseIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 
 import { useSpotifyContext } from "../SpotifyContext";
 import { twJoin } from "tailwind-merge";
 
 const Song = ({ order, song, width }: any) => {
-  const { setCurrentTrackId } = useSpotifyContext();
+  const { selectedTrack, setSelectedTrack } = useSpotifyContext();
   const { track, added_at } = song;
   //   const [currentTrackId, setCurrentTrackId] = useState(track.id);
   //   const [isPlaying, setIsPlaying] = useState(false);
@@ -49,11 +51,16 @@ const Song = ({ order, song, width }: any) => {
   }
   return (
     <div
-      className="flex place-items-center text-neutral-400"
-      onClick={() => setCurrentTrackId(track.id)}
+      className={twJoin(
+        "flex place-items-center text-neutral-400 rounded-md py-2",
+        selectedTrack == track?.id ? "bg-neutral-500" : "hover:bg-neutral-700"
+      )}
+      onClick={() => setSelectedTrack(track.id)}
     >
       <div className="flex gap-4 place-items-center">
         <span className="text-right w-10">{order + 1}</span>
+        <PlayIcon className="size-7 text-neutral-400" />
+
         <div
           className={twJoin(
             "flex place-items-center w-96 gap-3",

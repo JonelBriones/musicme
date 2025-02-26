@@ -9,6 +9,7 @@ const ThemeContext = createContext(null);
 const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
   const [selectedPlaylist, setSelectedPlaylist] = useState<any | null>(null);
   const [currentTrackId, setCurrentTrackId] = useState(null);
+  const [selectedTrack, setSelectedTrack] = useState(null);
   const [isPlaying, setIsPlaying] = useState(null);
   const [viewPlaylist, setViewPlaylist] = useState(false);
   const [currentTrack, setCurrentTrack] = useState({});
@@ -16,48 +17,48 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
   const [categories, setCategories] = useState([]);
   const [userPlaylist, setUserPlaylist] = useState([]);
   const [lyrics, setLyrics] = useState("");
-  const [songData, setSongData] = useState({});
+  const [songData, setSongDataArtist] = useState({});
   const [songInfo, setSongInfo] = useState(null);
   const [MainContainerWidth, setMainContainerWidth] = useState(0);
   const [SideAndMainWidth, setSideAndMainWidth] = useState(0);
   const param = useParams();
   const { data: session, status } = useSession();
-
-  // useEffect(()=>{
-  //   console.log("use spotify");
-  //   if (session) {
-  //     if (session.error == "RefreshAccessTokenError") {
-  //       signIn();
-  //     }
-  //     spotifyApi.setAccessToken(session.user.accessToken);
-  //   }
-  //   return spotifyApi;
-  // },[session])
   const spotifyApi = useSpotify();
 
   // console.log(categories);
 
   const validateAccessToken = spotifyApi.getAccessToken();
 
+  const fetchCurrentTrack = () => {
+    console.log("fetching track");
+
+    if (!songInfo) {
+      spotifyApi.getMyCurrentPlayingTrack().then((data) => {
+        setCurrentTrackId(data.body?.item?.id);
+        spotifyApi.getMyCurrentPlaybackState().then((data) => {
+          setSongInfo(data.body);
+        });
+      });
+    }
+  };
+
   const getPlayListFromId = (id: string): any => {
     console.log(spotifyApi._crendtials);
     console.log(validateAccessToken);
     !validateAccessToken && validateAccessToken;
     spotifyApi.getPlaylist(id).then((data) => {
-      console.log("finding playlist...", data);
       setSelectedPlaylist(data.body.tracks.items.slice(0, 10));
       setViewPlaylist(viewPlaylist);
     });
     // setSelectedPlaylist(data.body.tracks.items.slice(0, 10));
     // setViewPlaylist(viewPlaylist);
   };
+
   const getUserPlaylists = () => {
-    console.log(spotifyApi);
     if (spotifyApi.getAccessToken()) {
       spotifyApi
         .getUserPlaylists()
         .then((data) => {
-          console.log("user playlist", data.body.items);
           setUserPlaylist(data.body.items);
         })
         .catch((err) => {
@@ -67,7 +68,7 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const fetchSongInfo = async () => {
+  const getSelectedTrack = async () => {
     if (currentTrackId) {
       const trackInfo = await fetch(
         `https://api.spotify.com/v1/tracks/${currentTrackId}`,
@@ -92,7 +93,7 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
     ).then((res) => {
       res.json();
     });
-    setSongData({
+    setSongDataArtist({
       ...songData,
       artist: artistInfo.name,
       genres: artistInfo.genres,
@@ -118,7 +119,6 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
     const lyrics = await fetch(`https://api.lyrics.ovh/v1/newjeans/omg`).then(
       (res) => res.json()
     );
-    console.log("getting lyrics...", lyrics);
     setLyrics(lyrics);
   };
 
@@ -132,11 +132,6 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
       setRecentlyPlayedTracks(data.body?.items);
     });
   };
-
-  useEffect(() => {
-    console.log(session);
-    console.log(spotifyApi._credentials);
-  }, []);
 
   return (
     <ThemeContext.Provider
@@ -153,6 +148,9 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
         getUserPlaylists,
         userPlaylist,
         spotifyApi,
+        selectedTrack,
+        setSelectedTrack,
+        fetchCurrentTrack,
       }}
     >
       {children}

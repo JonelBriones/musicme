@@ -29,21 +29,26 @@ const Player = () => {
     setIsPlaying,
     isPlaying,
     songInfo,
+    fetchCurrentTrack,
   } = useSpotifyContext();
   const [volume, setVolume] = useState(20);
   const [seek, setSeek] = useState(0);
   const [loading, setLoading] = useState(true);
-  const fetchCurrentTrack = () => {
-    if (!songInfo) {
-      spotifyApi.getMyCurrentPlayingTrack().then((data) => {
-        setCurrentTrackId(data.body?.item?.id);
-        spotifyApi.getMyCurrentPlaybackState().then((data) => {
-          setIsPlaying(data.body?.is_playing);
-          setSeek(data.body?.progress_ms / 1000);
-        });
-      });
+  useEffect(() => {
+    // get current track on first render
+    if (spotifyApi.getAccessToken() && !currentTrackId) {
+      console.log("fetching");
+      fetchCurrentTrack();
+      setLoading(false);
     }
-  };
+  }, [currentTrackId, spotifyApi, session]);
+  useEffect(() => {
+    if (songInfo) {
+      console.log(songInfo.item.duration_ms / 1000);
+      setSeek(songInfo.item.duration_ms / 1000);
+      setIsPlaying(true);
+    }
+  }, [songInfo]);
   const handlePlayPause = () => {
     // check if a song is currently playing,
     // if song is currently playing, set new
@@ -116,15 +121,6 @@ const Player = () => {
   }
 
   useEffect(() => {
-    if (spotifyApi.getAccessToken() && !currentTrackId) {
-      // on render, check for current track
-      fetchCurrentTrack();
-      // setVolume(50);
-      setLoading(false);
-    }
-  }, [currentTrackId, spotifyApi, session]);
-
-  useEffect(() => {
     if (volume >= 0 && volume < 100) {
       debounceAdjustVolume(volume);
     }
@@ -147,7 +143,7 @@ const Player = () => {
   );
 
   useEffect(() => {
-    if (seek > 0 && seek < songInfo?.duration_ms / 1000) {
+    if (seek > 0 && seek < songInfo?.item.duration_ms / 1000) {
       debounceSeek(seek);
     }
   }, [seek]);
@@ -162,13 +158,13 @@ const Player = () => {
     <div className="flex place-items-center text-neutral-400 min-w-screen-md">
       <div className="flex flex-1 gap-4">
         <div className="shrink-0">
-          {songInfo?.album?.images !== null &&
-          songInfo?.album?.images?.[0]?.url ? (
+          {songInfo?.item.album?.images !== null &&
+          songInfo?.item.album?.images?.[0]?.url ? (
             <Image
               height={60}
               width={60}
-              alt={songInfo?.name + "_img"}
-              src={songInfo?.album?.images?.[0]?.url}
+              alt={songInfo?.item.name + "_img"}
+              src={songInfo?.item.album?.images?.[0]?.url}
               className="rounded-md min-w-[40px]"
             />
           ) : (
@@ -178,9 +174,9 @@ const Player = () => {
           )}
         </div>
         <div className="flex shrink flex-col justify-center max-w-60">
-          <span className="text-white truncate">{songInfo?.name}</span>
+          <span className="text-white truncate">{songInfo?.item.name}</span>
           <span className="text-[.875rem] truncate">
-            {songInfo?.album?.artists?.[0]?.name}
+            {songInfo?.item.album?.artists?.[0]?.name}
           </span>
         </div>
       </div>
@@ -219,7 +215,7 @@ const Player = () => {
           <input
             type="range"
             min={0}
-            max={(songInfo?.duration_ms / 1000).toString()}
+            max={(songInfo?.item.duration_ms / 1000).toString()}
             value={songInfo ? seek : 0}
             step={0.01}
             onChange={(e) => setSeek(Number(e.target.value))}
@@ -227,7 +223,9 @@ const Player = () => {
             disabled={!songInfo}
           />
           {songInfo && (
-            <span>{millisecondsToMinutesSeconds(songInfo?.duration_ms)}</span>
+            <span>
+              {millisecondsToMinutesSeconds(songInfo?.item.duration_ms)}
+            </span>
           )}
         </div>
       </div>

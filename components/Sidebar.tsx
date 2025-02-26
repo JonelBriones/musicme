@@ -27,16 +27,8 @@ import Link from "next/link";
 
 const Sidebar = () => {
   const { data: session } = useSession();
-  const {
-    getPlayListFromId,
-    selectedPlaylist,
-    getUserPlaylists,
-    userPlaylist,
-  } = useSpotifyContext();
+  const { getUserPlaylists, userPlaylist } = useSpotifyContext();
   const spotifyApi = useSpotify();
-  const [playLists, setPlaylists] = useState([]);
-  const [playList, setPlaylist] = useState([]);
-  const [likedSong, setLikedSongs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -61,23 +53,18 @@ const Sidebar = () => {
   }, [session, spotifyApi]);
 
   const [viewAs, setViewAs] = useState("list");
-  const [squareSize, setSquareSize] = useState(120);
   const [squareRange, setSquareRange] = useState(0);
 
   const handleSquareSize = () => {
     if (squareRange <= 2) {
-      console.log("returning 60");
       return 120;
     }
 
     if (squareRange > 2 && squareRange < 7) {
-      console.log("returning 300");
-
       return 320;
     }
 
     if (squareRange >= 7) {
-      console.log("returning 400");
       return 400;
     }
   };
@@ -148,7 +135,7 @@ const Sidebar = () => {
       }
     };
   }, []);
-  console.log(width);
+
   const onExpandLibrary = () => {
     return true;
   };
