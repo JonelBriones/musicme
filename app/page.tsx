@@ -46,7 +46,6 @@ export default function Home() {
   useEffect(() => {
     console.log(spotifyApi.getAccessToken());
     if (spotifyApi.getAccessToken() && recentlyPlayedTracks.length == 0) {
-      console.log("calling recents");
       handleMyRecentlyPlayedTracks();
     }
     // getCategories();
@@ -61,8 +60,6 @@ export default function Home() {
       };
       // might contain duplicates
       // setArtists([...artists, track.artists[0].name]);
-      console.log("current list", list);
-      console.log("adding to song and artist", trackObject);
 
       list.push(trackObject);
       // spotifyApi.getArtistTopTracks(track.artists[0].id).then((data) => {
@@ -89,7 +86,6 @@ export default function Home() {
       handleGetArtist();
     }
     if (songAndArtist.length > 0) {
-      console.log("log prompt");
       const fetchData = async () => {
         const res = await fetch("/api/recommend", {
           method: "POST",
@@ -100,9 +96,7 @@ export default function Home() {
         });
 
         const data = await res.json();
-        console.log("data", data.recommendation);
-        console.log("parsed", JSON.parse(data.recommendation));
-        console.log("type", typeof data.recommendation);
+
         setData(JSON.parse(data.recommendation));
       };
 
@@ -129,7 +123,6 @@ export default function Home() {
       // }
     }
   }, [data]);
-  console.log(artists);
 
   const handleViewArtist = async (id) => {
     spotifyApi.getArtistTopTracks(id);

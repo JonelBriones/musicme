@@ -39,7 +39,7 @@ const Player = () => {
   const [showSeekbar, setSeekbar] = useState(false);
 
   const [repeatTrack, setRepeatTrack] = useState("off");
-
+  const [device, setDevice] = useState(false);
   function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
@@ -50,6 +50,8 @@ const Player = () => {
     return () => clearTimeout(timer);
   }, []);
   useEffect(() => {
+    // spotifyApi.getMyDevices().then((data) => console.log(data));
+
     if (spotifyApi.getAccessToken() && !currentTrackId && !songInfo) {
       fetchCurrentTrack();
       setLoading(false);

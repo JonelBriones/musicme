@@ -45,7 +45,7 @@ const Container = ({ children }: { children: React.ReactNode }) => {
       >
         <Sidebar />
         <PanelResizeHandle />
-        <Panel id="main" order={2} minSize={mobileMaxSize()}>
+        <Panel id="main" order={2} minSize={mobileMaxSize()} className="">
           {children}
           <PanelResizeHandle />
         </Panel>

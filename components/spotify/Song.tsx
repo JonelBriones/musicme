@@ -51,7 +51,6 @@ const Song = ({ order, song, width }: any) => {
 
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   }
-  console.log(song);
 
   return (
     <div

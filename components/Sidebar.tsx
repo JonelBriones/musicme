@@ -1,14 +1,6 @@
 "use client";
-import spotifyApi from "@/lib/spotify";
 import { useSession } from "next-auth/react";
-import React, {
-  Fragment,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import useSpotify from "./hooks/useSpotify";
 import { useSpotifyContext } from "./SpotifyContext";
 import Image from "next/image";
@@ -36,20 +28,6 @@ const Sidebar = () => {
       getUserPlaylists();
       setLoading(false);
     }
-    // if (spotifyApi.getAccessToken()) {
-    //   console.log("access token", spotifyApi._credentials);
-    //   spotifyApi
-    //     .getUserPlaylists()
-    //     .then((data) => {
-    //       setPlaylists(data.body.items);
-    //       console.log("PLAYLIST", data.body.items);
-    //       setLoading(false);
-    //     })
-    //     .catch((err) => {
-    //       console.log(err);
-    //       redirect("/login");
-    //     });
-    // }
   }, [session, spotifyApi]);
 
   const [viewAs, setViewAs] = useState("list");
@@ -125,7 +103,7 @@ const Sidebar = () => {
   const onExpandLibrary = () => {
     return true;
   };
-  console.log(width);
+
   // console.log(userPlaylist);
   return (
     <Panel
@@ -273,14 +251,15 @@ const Sidebar = () => {
         )}
       </div>
 
-      {loading ? (
-        <div>loading...</div>
-      ) : (
+      {!loading && (
         <div
           className={twJoin(
-            "grid gap-2 grid-cols-1",
-            width < 180 && "grid-cols-1 ",
-            width >= 180 && width < 320 && "grid-cols-2 ",
+            viewAs !== "grid"
+              ? "flex flex-col border"
+              : "grid gap-2 grid-cols-1 overflow-auto pr-2",
+            width < 80 && "grid-cols-1",
+            width >= 120 && width < 220 && "grid-cols-2 ",
+            width >= 220 && width < 320 && "grid-cols-2 ",
             width >= 320 && width < 420 && "grid-cols-3 ",
             width >= 420 && width < 520 && "grid-cols-4",
             width >= 520 && width < 620 && "grid-cols-5",
@@ -293,7 +272,7 @@ const Sidebar = () => {
           {userPlaylist.map((playList, idx) => {
             const { images, id, name } = playList;
             return (
-              <Link className="square" href={`/playlist/${id}`}>
+              <Link key={id} className="square" href={`/playlist/${id}`}>
                 {viewAs !== "compact" &&
                   (images !== null ? (
                     <Image
