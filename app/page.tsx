@@ -81,7 +81,6 @@ export default function Home() {
     return [num1, num2];
   };
   useEffect(() => {
-    // from recent tracks, extra artist name,
     if (recentlyPlayedTracks.length && songAndArtist.length == 0) {
       handleGetArtist();
     }
@@ -99,7 +98,6 @@ export default function Home() {
 
         setData(JSON.parse(data.recommendation));
       };
-
       fetchData();
     }
   }, [recentlyPlayedTracks, songAndArtist]);
@@ -201,13 +199,6 @@ export default function Home() {
                   <p className="text-white text-[1rem] w-full truncate">
                     {playList.name}
                   </p>
-
-                  {/* <p className="text-white text-[1rem] truncate">
-                          {name} date_added
-                        </p>
-                        <p className="text-white text-[1rem] truncate">
-                          {name} recently played
-                        </p> */}
                 </div>
               </div>
             );

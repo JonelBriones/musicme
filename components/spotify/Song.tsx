@@ -7,11 +7,10 @@ import Image from "next/image";
 import { useSpotifyContext } from "../SpotifyContext";
 import { twJoin } from "tailwind-merge";
 
-const Song = ({ order, song, width }: any) => {
+const Song = ({ order, song, width, added_at }: any) => {
   const { selectedTrack, setSelectedTrack, getSelectedTrack } =
     useSpotifyContext();
 
-  const { added_at } = song;
   //   const [currentTrackId, setCurrentTrackId] = useState(song.track.id);
   //   const [isPlaying, setIsPlaying] = useState(false);
   function timeSince(added_at: string) {
@@ -51,7 +50,7 @@ const Song = ({ order, song, width }: any) => {
 
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   }
-
+  console.log(added_at);
   return (
     <div
       className={twJoin(
@@ -60,16 +59,11 @@ const Song = ({ order, song, width }: any) => {
       )}
       onClick={() => setSelectedTrack(song.id)}
     >
-      <div className="flex gap-4 place-items-center">
+      <div className="flex gap-4 place-items-center w-96">
         <span className="text-right w-10">{order + 1}</span>
         <PlayIcon className="size-7 text-neutral-400" />
 
-        <div
-          className={twJoin(
-            "flex place-items-center w-96 gap-3",
-            width <= 500 && "w-fit"
-          )}
-        >
+        <div className={twJoin("flex place-items-center gap-3")}>
           {song?.album?.images !== null ? (
             <div>
               <Image
@@ -86,7 +80,7 @@ const Song = ({ order, song, width }: any) => {
             </div>
           )}
 
-          <div className="flex w-36 flex-col">
+          <div className="flex w flex-col truncate">
             <span className="text-white text-[.875rem] truncate">
               {song.name}
             </span>
@@ -100,7 +94,6 @@ const Song = ({ order, song, width }: any) => {
           {song?.album?.name}
         </span>
       )}
-
       {width > 850 && (
         <span className="text-left flex-1 w-36 ">{timeSince(added_at)}</span>
       )}

@@ -24,9 +24,11 @@ export default function RootLayout({
   return (
     <AuthProvider>
       <html lang="en">
-        <body className="bg-neutral-900 flex place-items-center m-auto container h-screen p-4 border ">
+        <body className="bg-neutral-900 ">
           <SpotifyContext>
-            <Container children={children} />
+            <div className="container flex m-auto">
+              <Container children={children} />
+            </div>
           </SpotifyContext>
         </body>
       </html>

@@ -36,15 +36,16 @@ const Container = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className="flex flex-col text-[1rem] h-screen p-4">
+    <div className="flex flex-col text-[1rem] h-screen p-4 w-full">
       <TopBar />
       <PanelGroup
         autoSaveId="example"
         direction="horizontal"
-        className="flex gap-3 flex-grow overflow-hidden py-4"
+        className="flex gap-1 flex-grow overflow-hidden py-4"
       >
         <Sidebar />
         <PanelResizeHandle />
+
         <Panel id="main" order={2} minSize={mobileMaxSize()} className="">
           {children}
           <PanelResizeHandle />
