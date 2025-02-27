@@ -43,7 +43,7 @@ const page = () => {
       }
     };
   }, [spotifyApi, session]);
-
+  console.log(width);
   return (
     <div className="flex flex-col text-[1rem] h-screen p-4 text-white backgroundContainer">
       {loading ? (

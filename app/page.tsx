@@ -111,18 +111,22 @@ export default function Home() {
   }, [recentlyPlayedTracks, songAndArtist]);
 
   useEffect(() => {
-    if (data?.length > 0) {
-      const query = data.join(",");
-      console.log(query);
-      spotifyApi.searchArtists(query).then((data) => {
-        // body.artists.items.map((rec) => {
-        //   // setRecommendedArtists(id)
-        //   console.log(rec);
-        // });
-        console.log(data.body.artists.items);
-        localStorage.setItem("recommended_artists");
-        setArtists(data.body.artists.items);
-      });
+    if (localStorage.getItem("recommended_artists")) {
+      setArtists(JSON.parse(localStorage.getItem("recommended_artists")));
+    } else {
+      // if (data?.length > 0) {
+      //   const query = data.join(",");
+      //   console.log(query);
+      //   spotifyApi.searchArtists(query).then((data) => {
+      //     console.log(data.body.artists.items);
+      //     // localStorage.setItem("recommended_artists", data.body.artists.items);
+      //     localStorage.setItem(
+      //       "recommended_artists",
+      //       JSON.stringify(data.body.artists.items)
+      //     );
+      //     setArtists(data.body.artists.items);
+      //   });
+      // }
     }
   }, [data]);
   console.log(artists);

@@ -62,7 +62,7 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
       spotifyApi
         .getUserPlaylists()
         .then((data) => {
-          setUserPlaylist(data.body.items);
+          setUserPlaylist(data.body.items.slice(0, 15));
         })
         .catch((err) => {
           console.log(err);

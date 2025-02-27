@@ -53,21 +53,7 @@ const Sidebar = () => {
   }, [session, spotifyApi]);
 
   const [viewAs, setViewAs] = useState("list");
-  const [squareRange, setSquareRange] = useState(0);
-
-  const handleSquareSize = () => {
-    if (squareRange <= 2) {
-      return 120;
-    }
-
-    if (squareRange > 2 && squareRange < 7) {
-      return 320;
-    }
-
-    if (squareRange >= 7) {
-      return 400;
-    }
-  };
+  const [squareMaxSize, setSquareRange] = useState(64);
 
   const [toggleLayout, setToggleLayout] = useState(false);
   const toggleLayoutRef = useRef(null);
@@ -139,6 +125,8 @@ const Sidebar = () => {
   const onExpandLibrary = () => {
     return true;
   };
+  console.log(width);
+  // console.log(userPlaylist);
   return (
     <Panel
       id="sidebar"
@@ -204,10 +192,14 @@ const Sidebar = () => {
                   <Bars3Icon className=" size-6" />
                 )}
               </div>
+
               {toggleLayout && (
                 <div
                   ref={toggleLayoutRef}
-                  className="absolute -bottom-40 w-44 flex flex-col right-0 bg-[#3d3d3d] p-1 rounded-lg"
+                  className={twJoin(
+                    "absolute -bottom-40 w-44 flex flex-col right-0 bg-[#3d3d3d] p-1 rounded-lg z-10",
+                    viewAs == "grid" && "rounded-b-none"
+                  )}
                 >
                   <span
                     className="flex gap-3 justify-between hover:bg-neutral-600 bg-[#3d3d3d] p-3"
@@ -260,6 +252,20 @@ const Sidebar = () => {
                       <CheckIcon className="size-6 text-[#1ed760]" />
                     )}
                   </span>
+                  {viewAs == "grid" && (
+                    <span
+                      className="flex gap-3 justify-between bg-[#3d3d3d] p-3 absolute -bottom-7 w-44 left-0 rounded-b-lg"
+                      onClick={() => setViewAs("grid")}
+                    >
+                      <input
+                        type="range"
+                        value={squareMaxSize}
+                        min={64}
+                        max={300}
+                        onChange={(e) => setSquareRange(Number(e.target.value))}
+                      />
+                    </span>
+                  )}
                 </div>
               )}
             </div>
@@ -272,39 +278,35 @@ const Sidebar = () => {
       ) : (
         <div
           className={twJoin(
-            "flex flex-wrap gap-3 overflow-auto",
-            width > 240 && "flex-col flex-nowrap"
+            "grid gap-2 grid-cols-1",
+            width < 180 && "grid-cols-1 ",
+            width >= 180 && width < 320 && "grid-cols-2 ",
+            width >= 320 && width < 420 && "grid-cols-3 ",
+            width >= 420 && width < 520 && "grid-cols-4",
+            width >= 520 && width < 620 && "grid-cols-5",
+            width >= 620 && width < 720 && "grid-cols-6",
+            width >= 720 && width < 820 && "grid-cols-7",
+            width >= 820 && width < 920 && "grid-cols-8",
+            width >= 920 && width < 1020 && "grid-cols-9"
           )}
         >
           {userPlaylist.map((playList, idx) => {
             const { images, id, name } = playList;
             return (
-              <Link
-                key={id}
-                className="flex gap-3 place-items-center cursor-pointer shrink-0 overflow-hidden"
-                href={`/playlist/${id}`}
-                // onClick={() => getPlayListFromId(id, playList)}
-              >
+              <Link className="square" href={`/playlist/${id}`}>
                 {viewAs !== "compact" &&
                   (images !== null ? (
                     <Image
-                      height={viewAs == "list" ? 60 : handleSquareSize()}
-                      width={viewAs == "list" ? 60 : handleSquareSize()}
-                      alt={name + "_img"}
-                      src={images?.[0]?.url}
-                      className="rounded-md"
+                      layout="fill"
+                      objectFit="cover"
+                      alt={playList?.name + "_img"}
+                      src={playList.images?.[0]?.url}
+                      className="rounded-md content  "
                     />
                   ) : (
                     // if no image is available
-                    <div
-                      className={twJoin(
-                        `text-neutral-400 bg-neutral-800  rounded-md flex justify-center place-items-center`,
-                        viewAs == "grid"
-                          ? `size-[${handleSquareSize()}px]`
-                          : "w-[60px] h-[60px]"
-                      )}
-                    >
-                      <MusicalNoteIcon className="text-neutral-400 size-7" />
+                    <div className="text-neutral-400 bg-neutral-800 content flex place-items-center justify-center">
+                      <MusicalNoteIcon className="text-neutral-400 w-3/6" />
                     </div>
                   ))}
                 {/*  use observer */}

@@ -67,3 +67,38 @@ input[type="range"]::-ms-track {
 .sidebarSearch {
   transition: width 300ms;
 }
+
+.square-container {
+  display: grid;
+  /* grid-template-columns: repeat(auto-fit, max(64px, 1fr)); */
+  grid-template-columns: ;
+  grid-gap: 10px;
+  border: 2px solid blue;
+}
+.square-container-col-2 {
+  grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
+}
+.square-container-col-3 {
+  grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
+}
+.square-container-col-4 {
+  grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
+}
+.square-container-col-5 {
+  grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
+}
+
+.square {
+  padding-top: 100%; /* padding trick directly on the grid item */
+  box-sizing: border-box;
+  position: relative;
+}
+
+.square .content {
+  /* absolutely positioned */
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
