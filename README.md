@@ -1,9 +1,8 @@
 # 🎵 MusicMe  
-
+**Finished?** On-going  
 ## 📌 Project Overview  
 
 **Project Name:** MusicMe 
-**Finished?:** On-going  
 **Description:**  
 MusicMe is an API-driven song recommendation website that leverages the **Spotify API** and **ChatGPT's OpenAI** to provide personalized music suggestions.  
 
