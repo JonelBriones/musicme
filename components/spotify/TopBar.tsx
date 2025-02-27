@@ -1,7 +1,11 @@
 "use client";
 import { signOut, useSession } from "next-auth/react";
 import React, { useEffect, useRef } from "react";
-import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/solid";
+import {
+  MagnifyingGlassIcon,
+  PlusIcon,
+  ArrowRightEndOnRectangleIcon,
+} from "@heroicons/react/24/solid";
 import { HomeIcon } from "@heroicons/react/24/outline";
 import { GlobeAltIcon } from "@heroicons/react/24/solid";
 import spotifyApi from "@/lib/spotify";
@@ -34,13 +38,9 @@ const TopBar = () => {
   };
 
   return (
-    <div className="text-white flex justify-between place-items-center">
-      <h1>
-        {" "}
-        Welcome {session?.user?.name ? session.user.name : "not logged in"}{" "}
-      </h1>
-      <div className="flex gap-2 place-items-center">
-        <button>RECOMMEND</button>
+    <div className="text-white flex place-items-center">
+      <div className="flex-1 justify-start"></div>
+      <div className="flex flex-1 gap-2 place-items-center">
         <Link
           href={"/"}
           className="flex place-items-center bg-neutral-800 hover:bg-neutral-800/95 p-6 rounded-full justify-center transition-colors duration-200 relative ease-in-out"
@@ -83,9 +83,14 @@ const TopBar = () => {
           <PlusIcon className="w-full h-full p-3 hover:p-[.725rem] absolute top-0 left-0 text-neutral-400 hover:text-neutral-200 transition-all duration-100 ease-in-out" />
         </Link>
       </div>
-      <button onClick={() => signOut()} className="flex">
-        Log out
-      </button>
+      <div className="flex-1 flex justify-end">
+        <button
+          onClick={() => signOut()}
+          className="flex place-items-center gap-2"
+        >
+          <ArrowRightEndOnRectangleIcon className="size-10 text-neutral-400 hover:text-neutral-200 transition-all duration-100 ease-in-out scale-105" />
+        </button>
+      </div>
     </div>
   );
 };

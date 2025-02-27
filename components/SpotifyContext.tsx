@@ -45,6 +45,12 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
       setIsPlaying(data.body?.is_playing);
     });
   };
+
+  const fetchDevice = () => {
+    console.log("fetching devices");
+    spotifyApi.getMyDevices().then((data) => console.log(data));
+  };
+
   const getPlayListFromId = (id: string): any => {
     console.log(spotifyApi._crendtials);
     console.log(validateAccessToken);
@@ -53,8 +59,6 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
       setSelectedPlaylist(data.body.tracks.items.slice(0, 10));
       setViewPlaylist(viewPlaylist);
     });
-    // setSelectedPlaylist(data.body.tracks.items.slice(0, 10));
-    // setViewPlaylist(viewPlaylist);
   };
 
   const getUserPlaylists = () => {
@@ -169,6 +173,7 @@ const SpotifyContext = ({ children }: { children: React.ReactNode }) => {
         recentlyPlayedTracks,
         getCategories,
         categories,
+        fetchDevice,
       }}
     >
       {children}

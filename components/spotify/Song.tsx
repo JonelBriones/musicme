@@ -8,11 +8,11 @@ import { useSpotifyContext } from "../SpotifyContext";
 import { twJoin } from "tailwind-merge";
 
 const Song = ({ order, song, width, added_at }: any) => {
-  const { selectedTrack, setSelectedTrack, getSelectedTrack } =
+  const { selectedTrack, setSelectedTrack, getSelectedTrack, fetchDevice } =
     useSpotifyContext();
 
-  //   const [currentTrackId, setCurrentTrackId] = useState(song.track.id);
-  //   const [isPlaying, setIsPlaying] = useState(false);
+  // to play selected song, have to modify users play back que **
+
   function timeSince(added_at: string) {
     const date = new Date(added_at).getTime();
     const now = new Date();
@@ -26,7 +26,7 @@ const Song = ({ order, song, width, added_at }: any) => {
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
-    const months = Math.floor(days / 30.44); // Average days in a month
+    const months = Math.floor(days / 30.44);
     const years = Math.floor(months / 12);
 
     if (years > 0) {
@@ -51,6 +51,11 @@ const Song = ({ order, song, width, added_at }: any) => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   }
   console.log(added_at);
+
+  const handlePlayResume = () => {
+    fetchDevice();
+  };
+
   return (
     <div
       className={twJoin(
@@ -61,7 +66,10 @@ const Song = ({ order, song, width, added_at }: any) => {
     >
       <div className="flex gap-4 place-items-center w-96">
         <span className="text-right w-10">{order + 1}</span>
-        <PlayIcon className="size-7 text-neutral-400" />
+        <PlayIcon
+          className="size-7 text-neutral-400"
+          onClick={() => handlePlayResume()}
+        />
 
         <div className={twJoin("flex place-items-center gap-3")}>
           {song?.album?.images !== null ? (
